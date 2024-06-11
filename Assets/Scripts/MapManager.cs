@@ -65,21 +65,20 @@ public class MapManager : MonoBehaviour
                 }
                 Debug.Log($"count: {meshDict.Count}");
 
-                Vector3 vertex = transform.TransformPoint(mf.mesh.vertices[0]);
-                RaycastHit raycastHit;
-                Ray vertexRayDown = new Ray(vertex, Vector3.down);
-                Debug.DrawRay(vertexRayDown.origin, vertexRayDown.direction * 10, Color.green);
-                if (Physics.Raycast(vertexRayDown, out raycastHit))
-                {
-                    Renderer renderer = raycastHit.collider.gameObject.GetComponent<Renderer>();
-                    if (renderer != null) // Make sure the target has a Renderer component
-                    {
-                        Color randomColor = new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value);
-                        renderer.material.color = randomColor; // Change the color to green
-                    }
-                }
+                //Vector3 vertex = transform.TransformPoint(mf.mesh.vertices[0]);
+                //RaycastHit raycastHit;
+                //Ray vertexRayDown = new Ray(vertex, Vector3.down);
+                //Debug.DrawRay(vertexRayDown.origin, vertexRayDown.direction * 10, Color.green);
+                //if (Physics.Raycast(vertexRayDown, out raycastHit))
+                //{
+                //    Renderer renderer = raycastHit.collider.gameObject.GetComponent<Renderer>();
+                //    if (renderer != null) // Make sure the target has a Renderer component
+                //    {
+                //        Color randomColor = new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value);
+                //        renderer.material.color = randomColor; // Change the color to green
+                //    }
+                //}
 
-                // render one meshsdrftzu8i9,mn 
                 //GameObject go = new GameObject();
                 //go.AddComponent<MeshFilter>();
                 //go.AddComponent<MeshRenderer>();

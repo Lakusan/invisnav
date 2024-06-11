@@ -25,7 +25,7 @@ public class MapComponentControler : MonoBehaviour
                 vertexWorldPosition.y += 1;
                 RaycastHit hit;
                 Ray ray = new Ray(vertexWorldPosition, Vector3.down);
-                //Debug.DrawRay(ray.origin, ray.direction * 10, Color.yellow);
+                Debug.DrawRay(ray.origin, ray.direction * 10, Color.yellow);
                 if (Physics.Raycast(ray, out hit))
                 {
 
@@ -52,7 +52,3 @@ public class MapComponentControler : MonoBehaviour
     }
 
 }
-
-// planar flattening
-// y coordinates to ground level when mapo init
-// is map init 
