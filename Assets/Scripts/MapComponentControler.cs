@@ -12,7 +12,7 @@ public class MapComponentControler : MonoBehaviour
     void Start()
     { 
         meshFilter = GetComponent<MeshFilter>();
-        vertices = meshFilter.sharedMesh.vertices;
+        vertices = meshFilter.mesh.vertices;
     }
 
     void Update()
@@ -37,7 +37,7 @@ public class MapComponentControler : MonoBehaviour
             }
             Vector3 centerVector = meshFilter.mesh.bounds.center;
             centerVector = transform.TransformPoint(centerVector);
-            centerVector = new Vector3(centerVector.x, (centerVector.y +1), centerVector.z);
+            centerVector = new Vector3(centerVector.x, (centerVector.y + 1), centerVector.z);
             Ray rayCenter = new Ray(centerVector, Vector3.down);
             Debug.DrawRay(rayCenter.origin, rayCenter.direction * 10, Color.red);
 

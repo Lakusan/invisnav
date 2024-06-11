@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.XR.CoreUtils;
@@ -10,14 +9,27 @@ using UnityEngine.XR.ARFoundation;
 
 public class MapManager : MonoBehaviour
 {
+    public static MapManager Instance { get; private set; }
+
     [SerializeField] ARMeshManager m_arMeshManager;
     [SerializeField] MeshFilter m_meshPrefab;
     [SerializeField] XROrigin m_xrOrigin;
 
- 
-    Dictionary<string, Mesh> meshDict;
+
+    public static Dictionary<string, Mesh> meshDict;
     bool meshRendered = false;
 
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            Instance = this;
+        }
+    }
     void Start()
     {
         meshDict = new Dictionary<string, Mesh> ();
@@ -63,7 +75,7 @@ public class MapManager : MonoBehaviour
                 {
                     meshDict.Add(mf.name, mf.sharedMesh);
                 }
-                Debug.Log($"count: {meshDict.Count}");
+                //Debug.Log($"count: {meshDict.Count}");
 
                 //Vector3 vertex = transform.TransformPoint(mf.mesh.vertices[0]);
                 //RaycastHit raycastHit;
@@ -188,5 +200,6 @@ public class MapManager : MonoBehaviour
         MyConsole.instance.Log("Meshing state" + m_arMeshManager.enabled);
         Debug.Log($"try to save meshes");
     }
- 
+    
+    
 }
