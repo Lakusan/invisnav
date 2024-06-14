@@ -1,10 +1,6 @@
 using Newtonsoft.Json;
-using Niantic.Lightship.SharedAR.Rooms;
 using Proyecto26;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -126,7 +122,7 @@ public class DBTest : MonoBehaviour
             }
             Debug.Log($"Deserialized Meshes count: {meshes.Count}");
 
-            // create gos
+            // create gos for testing
             int iterator = 0;
             foreach (Mesh newMesh in meshes)
             {
@@ -142,7 +138,7 @@ public class DBTest : MonoBehaviour
                 iterator++;
             }
         });
-
+        // *** get location to DB ---> Works
 
         //SerializeMesh(mesh1);
         //SerializeMesh( mesh1);
@@ -152,7 +148,7 @@ public class DBTest : MonoBehaviour
         ////{
         ////    Debug.Log(mesh.x);
         ////}
-        //string json = Newtonsoft.Json.JsonConvert.SerializeObject(root);
+        //string json = v
         //Debug.Log($"json: {json}");
         //if (json != null)
         //{

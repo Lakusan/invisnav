@@ -166,4 +166,9 @@ public class DBManager : MonoBehaviour
             return default;
         }
     }
+
+    //public List<string> GetRegisteredLocations()
+    //{
+
+    //}
 }
