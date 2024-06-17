@@ -1,4 +1,7 @@
+using System;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
 public class UIController : MonoBehaviour
@@ -12,7 +15,7 @@ public class UIController : MonoBehaviour
         navigate
     }
     // layout elements
-    private VisualElement  _mainContainer;
+    private VisualElement _mainContainer;
     private VisualElement _mainTopContainer;
     private VisualElement _mainMiddleContainer;
     private VisualElement _mainBottomContainer;
@@ -29,6 +32,8 @@ public class UIController : MonoBehaviour
     private VisualElement _scanElement;
     private VisualElement _scanTopContainer;
     private VisualElement _scanMiddleContainer;
+    private VisualElement _createLocationButton;
+    private TextField _locationNameInputField;
 
     // Navigation 
     [SerializeField]
@@ -36,7 +41,7 @@ public class UIController : MonoBehaviour
     private VisualElement _navigationElement;
     private VisualElement _navigationTopContainer;
     private VisualElement _navigationMiddleContainer;
-    
+
     private void Awake()
     {
         _mainDoc = GetComponent<UIDocument>();
@@ -44,7 +49,7 @@ public class UIController : MonoBehaviour
         _mainTopContainer = _mainContainer.Q<VisualElement>("TopContainer");
         _mainMiddleContainer = _mainContainer.Q<VisualElement>("MiddleContainer");
         _mainBottomContainer = _mainContainer.Q<VisualElement>("BottomContainer");
-        
+
         //scan element
         _scanElement = _scanTemplate.CloneTree();
         _scanTopContainer = _scanElement.Q<VisualElement>("TopContainer");
@@ -54,7 +59,7 @@ public class UIController : MonoBehaviour
         _navigationElement = _navigationTemplate.CloneTree();
         _navigationTopContainer = _navigationElement.Q<VisualElement>("TopContainer");
         _navigationMiddleContainer = _navigationElement.Q<VisualElement>("MiddleContainer");
-         
+
         // get buttons + Events
         _backButton = _mainDoc.rootVisualElement.Q<Button>("BackButton");
         _backButton.clicked += BackButtonOnClicked;
@@ -87,6 +92,7 @@ public class UIController : MonoBehaviour
     {
         this._state = UISTATE.scan;
         ChangeViewState(this._state);
+
     }
 
     private void BackButtonOnClicked()
@@ -118,6 +124,7 @@ public class UIController : MonoBehaviour
                 _mainContainer.Add(_navigationMiddleContainer);
                 _mainContainer.Add(_mainBottomContainer);
                 _scanButton.visible = false;
+                _navigateButton.visible = false;
                 break;
             case UISTATE.scan:
                 Debug.Log($"scan clicked");
@@ -127,6 +134,12 @@ public class UIController : MonoBehaviour
                 _mainContainer.Add(_scanMiddleContainer);
                 _mainContainer.Add(_mainBottomContainer);
                 _navigateButton.visible = false;
+                _scanButton.visible = false;
+                _createLocationButton = _scanMiddleContainer.Q<Button>("CreateLocationButton");
+                Debug.Log($"create location button {_createLocationButton.name}");
+                _locationNameInputField = _scanMiddleContainer.Q<TextField>("LocationInput");
+                Debug.Log($"unput field {_locationNameInputField.name}");
+                _createLocationButton.RegisterCallback<ClickEvent>(OnCreateLocationButtonClicked);
                 break;
             default:
                 this._state = UISTATE.main;
@@ -134,5 +147,18 @@ public class UIController : MonoBehaviour
                 Debug.Log($"uiState: {this._state}");
                 break;
         }
+    }
+
+    private void OnCreateLocationButtonClicked(ClickEvent evt)
+    {
+        Debug.Log($"CREATE LOCATION: {_locationNameInputField.value}");
+
+    }
+
+    // get all Locations and populate LIste view
+    private void PopulateAvailableLocations()
+    {
+        //get locations 
+        // filter by gps range
     }
 }
