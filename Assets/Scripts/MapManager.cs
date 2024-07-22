@@ -15,7 +15,6 @@ public class MapManager : MonoBehaviour
     [SerializeField] MeshFilter m_meshPrefab;
     [SerializeField] XROrigin m_xrOrigin;
 
-
     public static Dictionary<string, Mesh> meshDict;
     bool meshRendered = false;
 
@@ -64,17 +63,17 @@ public class MapManager : MonoBehaviour
                 // if it exists change vals of map dict
                 // if its new check if segment exists in map
                 //if not add it, if it does do nothing more
-                GameObject mgGo = mf.gameObject;
+                //GameObject mgGo = mf.gameObject;
                 // raycast - if mesh -> nothing
                 // if no mesh -> add
-                if (meshDict.ContainsKey(mf.name))
-                {
-                    meshDict[mf.name] = mf.sharedMesh;
-                }
-                else
-                {
-                    meshDict.Add(mf.name, mf.sharedMesh);
-                }
+                //if (meshDict.ContainsKey(mf.name))
+                //{
+                //    meshDict[mf.name] = mf.sharedMesh;
+                //}
+                //else
+                //{
+                //    meshDict.Add(mf.name, mf.sharedMesh);
+                //}
                 //Debug.Log($"count: {meshDict.Count}");
 
                 //Vector3 vertex = transform.TransformPoint(mf.mesh.vertices[0]);
@@ -191,7 +190,8 @@ public class MapManager : MonoBehaviour
     public void toggleMeshing()
     {
         m_arMeshManager.enabled = !m_arMeshManager.enabled;
-        MyConsole.instance.Log("Meshing state" + m_arMeshManager.enabled);
+        //MyConsole.instance.Log("Meshing state" + m_arMeshManager.enabled);
+        Debug.Log($"meshing {m_arMeshManager.enabled}");
     }
 
     public void DBButtonPressed()
@@ -200,6 +200,5 @@ public class MapManager : MonoBehaviour
         MyConsole.instance.Log("Meshing state" + m_arMeshManager.enabled);
         Debug.Log($"try to save meshes");
     }
-    
     
 }

@@ -1,31 +1,25 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Android;
-using Niantic.Lightship.AR.XRSubsystems;
-using UnityEngine.XR.ARSubsystems;
 
 public class LocationManager : MonoBehaviour
 {
-    bool getUpdate = false;
-    int iterator = 0;
-    private void Update()
+    List<double> lastGpsCoords = new List<double>();
+
+    public void Start()
     {
-        if (getUpdate)
-        {
-            StartCoroutine(GetGPSLocation());
-            getUpdate = !getUpdate;
-            iterator++;
-            MyConsole.instance.Log("Location Manager Update Called");
-        }
+        StartCoroutine(GetGPSLocationFromSensors());
     }
 
-    public void SetUpdate(bool update)
+    public List<double> GetGPSCoords()
     {
-        getUpdate = !getUpdate;
-        MyConsole.instance.Log("Location Manager SetUpdate Called");
+        StartCoroutine (GetGPSLocationFromSensors());
+        return this.lastGpsCoords;
     }
 
-    IEnumerator GetGPSLocation()
+
+    IEnumerator GetGPSLocationFromSensors()
     {
         // Check if the user has location service enabled.
         if (!Permission.HasUserAuthorizedPermission(Permission.FineLocation))
@@ -68,9 +62,10 @@ public class LocationManager : MonoBehaviour
         else
         {
             // If the connection succeeded, this retrieves the device's current location and displays it in the Console window.
-            MyConsole.instance.Log(iterator.ToString());
-            MyConsole.instance.Log("Location service started");
-            MyConsole.instance.Log("Location: " + Input.location.lastData.latitude + " " + Input.location.lastData.longitude + " " + Input.location.lastData.altitude + " " + Input.location.lastData.horizontalAccuracy + " " + Input.location.lastData.timestamp);
+            //MyConsole.instance.Log("Location: " + Input.location.lastData.latitude + " " + Input.location.lastData.longitude + " " + Input.location.lastData.altitude + " " + Input.location.lastData.horizontalAccuracy + " " + Input.location.lastData.timestamp);
+            lastGpsCoords.Clear();
+            lastGpsCoords.Add(Input.location.lastData.latitude);
+            lastGpsCoords.Add(Input.location.lastData.longitude);
         }
 
         // Stops the location service if there is no need to query location updates continuously.

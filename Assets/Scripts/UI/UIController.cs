@@ -1,12 +1,10 @@
 using System;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
 public class UIController : MonoBehaviour
 {
-    private UIDocument _mainDoc;
+    public UIDocument _mainDoc;
     private UISTATE _state;
     public enum UISTATE
     {
@@ -14,6 +12,11 @@ public class UIController : MonoBehaviour
         scan,
         navigate
     }
+    // ARMeshing
+    GameObject _arMeshing;
+
+    // runtime navbar reference
+    private GameObject _navBar;
     // layout elements
     private VisualElement _mainContainer;
     private VisualElement _mainTopContainer;
@@ -41,6 +44,13 @@ public class UIController : MonoBehaviour
     private VisualElement _navigationElement;
     private VisualElement _navigationTopContainer;
     private VisualElement _navigationMiddleContainer;
+    private RadioButtonGroup _radioButtonGroup;
+    private Button _navigationStartButton;
+
+    // Data
+    private RegisteredLocations _registeredLocations;
+    private string _scanLocationName;
+    private string _navigationLocationName;
 
     private void Awake()
     {
@@ -59,6 +69,7 @@ public class UIController : MonoBehaviour
         _navigationElement = _navigationTemplate.CloneTree();
         _navigationTopContainer = _navigationElement.Q<VisualElement>("TopContainer");
         _navigationMiddleContainer = _navigationElement.Q<VisualElement>("MiddleContainer");
+        _navigationStartButton = _navigationMiddleContainer.Q<Button>("StartNavigationButton");
 
         // get buttons + Events
         _backButton = _mainDoc.rootVisualElement.Q<Button>("BackButton");
@@ -67,6 +78,24 @@ public class UIController : MonoBehaviour
         _navigateButton = _mainDoc.rootVisualElement.Q<Button>("NavigateButton");
         _scanButton.clicked += ScanButtonOnClicked;
         _navigateButton.clicked += NavigateButtonOnClicked;
+
+        // Get Navbar reference
+        try
+        {
+            GameObject myObject = GameObject.Find("NavBar");
+            if (myObject != null)
+            {
+                _navBar = myObject;
+            }
+            else
+            {
+                Debug.LogError("NavBar not found!");
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Error finding object: {e.Message}");
+        }
     }
 
     private void OnDisable()
@@ -80,6 +109,8 @@ public class UIController : MonoBehaviour
     {
         this._state = UISTATE.main;
         _backButton.visible = false;
+        _scanLocationName = null;
+        _navigationLocationName = null;
     }
 
     private void NavigateButtonOnClicked()
@@ -107,8 +138,6 @@ public class UIController : MonoBehaviour
         switch (uiState)
         {
             case UISTATE.main:
-                Debug.Log($"back clicked");
-                Debug.Log($"uiState: {this._state}");
                 _backButton.visible = false;
                 _navigateButton.visible = true;
                 _scanButton.visible = true;
@@ -117,18 +146,23 @@ public class UIController : MonoBehaviour
                 _mainContainer.Add(_mainBottomContainer);
                 break;
             case UISTATE.navigate:
-                Debug.Log($"navigate clicked");
-                Debug.Log($"uiState: {this._state}");
+                _registeredLocations = DBManager.Instance.GetRegisteredLocations();
+                _radioButtonGroup = _navigationElement.Q<RadioButtonGroup>("RadioButtonGroup");
+                _radioButtonGroup.choices = _registeredLocations.locations;
+                _navigationStartButton.RegisterCallback<ClickEvent>(OnStartNavigationButtonClicked);
+                _radioButtonGroup.RegisterValueChangedCallback(v =>
+                {
+                    _navigationLocationName = _registeredLocations.locations[v.newValue];
+                    Debug.Log($"Value Changed: {_navigationLocationName}");
+                });
                 _backButton.visible = true;
+                _scanButton.visible = false;
+                _navigateButton.visible = false;
                 _mainContainer.Add(_navigationTopContainer);
                 _mainContainer.Add(_navigationMiddleContainer);
                 _mainContainer.Add(_mainBottomContainer);
-                _scanButton.visible = false;
-                _navigateButton.visible = false;
                 break;
             case UISTATE.scan:
-                Debug.Log($"scan clicked");
-                Debug.Log($"uiState: {this._state}");
                 _backButton.visible = true;
                 _mainContainer.Add(_scanTopContainer);
                 _mainContainer.Add(_scanMiddleContainer);
@@ -136,29 +170,52 @@ public class UIController : MonoBehaviour
                 _navigateButton.visible = false;
                 _scanButton.visible = false;
                 _createLocationButton = _scanMiddleContainer.Q<Button>("CreateLocationButton");
-                Debug.Log($"create location button {_createLocationButton.name}");
-                _locationNameInputField = _scanMiddleContainer.Q<TextField>("LocationInput");
-                Debug.Log($"unput field {_locationNameInputField.name}");
                 _createLocationButton.RegisterCallback<ClickEvent>(OnCreateLocationButtonClicked);
                 break;
             default:
                 this._state = UISTATE.main;
-                Debug.Log($"default");
-                Debug.Log($"uiState: {this._state}");
                 break;
+        }
+    }
+
+    private void OnStartNavigationButtonClicked(ClickEvent evt)
+    {
+        if (_navigationLocationName != null) 
+        {
+            Debug.Log($"Start Navigation with {_navigationLocationName}");
         }
     }
 
     private void OnCreateLocationButtonClicked(ClickEvent evt)
     {
+        _registeredLocations = DBManager.Instance.GetRegisteredLocations();
+        _locationNameInputField = _scanMiddleContainer.Q<TextField>("LocationInput");
         Debug.Log($"CREATE LOCATION: {_locationNameInputField.value}");
+        // Check if Location exists
+        string locationName = _locationNameInputField.value;
+        Debug.Log($"locationname: {locationName}");
+        Debug.Log($"locations: {_registeredLocations.locations.Count}");
+        Label textContent = _scanMiddleContainer.Q<Label>("TextContent");
 
+        if (_registeredLocations.locations.Contains(locationName))
+        {
+            Debug.Log($"Location: {locationName} exists");
+            textContent.text = "Location " + locationName + " exists, try another name";
+        } else {
+            InitScanning();
+            // disable UI
+            // enable XR
+        }
     }
 
-    // get all Locations and populate LIste view
-    private void PopulateAvailableLocations()
+    private void InitScanning()
     {
-        //get locations 
-        // filter by gps range
+        if (this._state == UISTATE.scan)
+        {
+            // hide current loaded UI elements
+            _mainDoc.rootVisualElement.style.display = DisplayStyle.None; 
+        }
+        // enable AR Session
+        MapManager.Instance.toggleMeshing();
     }
 }

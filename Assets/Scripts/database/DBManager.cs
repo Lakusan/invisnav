@@ -2,6 +2,13 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using Proyecto26;
+using Newtonsoft.Json;
+
+public class RegisteredLocations
+{
+    public List<string> locations;
+}
+
 
 [System.Serializable]
 public class Locations
@@ -31,9 +38,8 @@ public class Location
 public class DBManager : MonoBehaviour
 {
     public bool fireBaseIsReady = false;
+    public RegisteredLocations registeredLocations;
     public static DBManager Instance { get; private set; }
-
-    //public List<MapData> mapDataList;
 
     void Awake()
     {
@@ -49,126 +55,59 @@ public class DBManager : MonoBehaviour
 
     private void Start()
     {
+        registeredLocations = new RegisteredLocations();
+
         Locations locations = new Locations();
         locations.locations = new Dictionary<string, Location>();
+        GetRegisteredLocationsFromDB();
+        //Location location1 = new Location()
+        //{
+        //    locationName = "location1",
+        //    meshData = new MeshData()
+        //};
+        //Location location2 = new Location()
+        //{
+        //    locationName = "location2",
+        //    meshData = new MeshData()
+        //};
 
-        Location location1 = new Location()
-        {
-            locationName = "location1",
-            meshData = new MeshData()
-        };
-        Location location2 = new Location()
-        {
-            locationName = "location2",
-            meshData = new MeshData()
-        };
+        //locations.locations.Add(location1.locationName, location1);
+        //locations.locations.Add(location2.locationName, location2);
 
-        locations.locations.Add(location1.locationName, location1);
-        locations.locations.Add(location2.locationName, location2);
 
-        foreach (KeyValuePair<string, Location> l in locations.locations)
+
+        //foreach (KeyValuePair<string, Location> l in locations.locations)
+        //{
+        //    Debug.Log($"l: {l.Value.GetType()}");
+        //    Location location = l.Value;
+        //    Debug.Log($"working on: {l.Value.locationName}");
+        //    RestClient.Put("https://invisnav-default-rtdb.europe-west1.firebasedatabase.app/maps/" + l.Value.locationName + ".json", l.Value);
+        //    Debug.Log("added");
+        //}
+        //RestClient.Get<Dictionary<string, Location>>("https://invisnav-default-rtdb.europe-west1.firebasedatabase.app/maps.json").Then(response =>
+        //{
+        //    Debug.Log(response.Count);
+
+        //});
+    }
+    
+    private void GetRegisteredLocationsFromDB()
+    {
+        RestClient.Get("https://invisnav-default-rtdb.europe-west1.firebasedatabase.app/registeredLocations.json").Then(response =>
         {
-            Debug.Log($"l: {l.Value.GetType()}");
-            Location location = l.Value;
-            Debug.Log($"working on: {l.Value.locationName}");
-            RestClient.Put("https://invisnav-default-rtdb.europe-west1.firebasedatabase.app/maps/" + l.Value.locationName + ".json", l.Value);
-            Debug.Log("added");
-        }
-        RestClient.Get<Dictionary<string, Location>>("https://invisnav-default-rtdb.europe-west1.firebasedatabase.app/maps.json").Then(response =>
-        {
-            Debug.Log(response.Count);
-            
+            Debug.Log($"response: {response.Text}");
+            registeredLocations = JsonConvert.DeserializeObject<RegisteredLocations>(response.Text); ;
+            Debug.Log($"count: {registeredLocations.locations.Count}");
+            foreach (var location in registeredLocations.locations)
+            {
+                Debug.Log($"found: {location}");
+            }
         });
+
     }
 
-    void GetMapFromDB()
+    public RegisteredLocations GetRegisteredLocations()
     {
-        RestClient.Get("https://invisnav-default-rtdb.europe-west1.firebasedatabase.app/maps.json").Then(response =>
-        {
-            Debug.Log(response.Text);
-            
-        });
-
+        return registeredLocations;
     }
-
-
-    //private bool CheckIfNameExists(string name)
-    //{
-    //    // check if locationName exists in DB Data
-    //    foreach (var item in mapDataList)
-    //    {
-    //        if (item.locationName == name)
-    //        {
-    //            return true;
-    //        }
-    //    }
-    //    return false;
-    //}
-
-    //public bool SaveNewMapData(MapData mD)
-    //{
-    //    // generates new entry in Maps.json 
-    //    try
-    //    {
-
-    //        RestClient.Put("https://invisnav-default-rtdb.europe-west1.firebasedatabase.app/maps/" + mD.locationName + ".json", mD);
-    //        return true;
-    //    }
-    //    catch (Exception e)
-    //    {
-    //        Debug.Log("Error saving map: " + e.Message);
-    //        return false;
-    //    }
-    //}
-
-    //public bool ChangeExistingMapData(MapData oldMapData, MapData newMapData)
-    //{
-    //    // generates new entry in Maps.json with unique 
-    //    try
-    //    {
-    //        // find Existing Map
-    //        RestClient.Get("https://invisnav-default-rtdb.europe-west1.firebasedatabase.app/map.json");
-
-    //        RestClient.Patch("https://invisnav-default-rtdb.europe-west1.firebasedatabase.app/maps/", newMapData);
-    //        // https://invisnav-default-rtdb.europe-west1.firebasedatabase.app/maps/-NzlfznKIfAq5JJi-xHi
-    //        return true;
-    //    }
-    //    catch (Exception e)
-    //    {
-    //        Debug.Log("Error saving map: " + e.Message);
-    //        return false;
-    //    }
-    //}
-
-    public string ConvertObjToJSONString<T>(T obj)
-    {
-        try
-        {
-            return JsonUtility.ToJson(obj);
-        }
-        catch (Exception ex)
-        {
-            Debug.Log("Error Converting obj to JSON string: " + ex.Message);
-            return default;
-        }
-    }
-
-    public T? ConvertJSONStringToObj<T>(string jsonString)
-    {
-        try
-        {
-            T? obj = JsonUtility.FromJson<T>(jsonString);
-            return obj;
-        }
-        catch (Exception ex)
-        {
-            Debug.Log("Error reading JSON string: " + ex.Message);
-            return default;
-        }
-    }
-
-    //public List<string> GetRegisteredLocations()
-    //{
-
-    //}
 }

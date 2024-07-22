@@ -5,10 +5,6 @@ using UnityEngine;
 
 public class Populate : MonoBehaviour
 {
-    public class RegisteredLocations
-    {
-        public List<string> locations;
-    }
 
     RegisteredLocations registeredLocations;
     RegisteredLocations newLocations;
