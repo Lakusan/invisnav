@@ -21,9 +21,10 @@ public class NavBarMenuButtonController : MonoBehaviour
     }
 
     /*
-     * - create location in DB and upload empty new location data object
+     * - [X] create location in DB and upload empty new location data object
      * - - get location data -> method / get location data and update
      * - get gps coodinates and if anchor placed, start meshing
+     * -- [X] Anchor placement with raycast triggered when map mesh component gets hit -> Anchor dummy placed
      * - - display information to user 
      * ---> Service Anchor + text 
      * --> Navigation sequence -> Activate Navigation if user is in segment use map to find place

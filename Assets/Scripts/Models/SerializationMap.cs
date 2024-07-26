@@ -8,9 +8,8 @@ public class SerializableRoot : MonoBehaviour
 public class SerializableLocation
 {
 #nullable disable
-    public double? longitude { get; set; }
-    public double? latitude { get; set; }
-    public string? name { get; set; }   
+    public double longitude { get; set; }
+    public double latitude { get; set; }
 #nullable disable
     public List<SerializableMesh> meshes { get; set; }
 }
@@ -37,9 +36,7 @@ public class SerializableVertex
 
 public class SerializableMap
 {
-   
-
-    public SerializableRoot root;
+   public SerializableRoot root;
 
    public SerializableMap()
     {

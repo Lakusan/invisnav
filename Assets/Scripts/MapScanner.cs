@@ -67,16 +67,36 @@ public class MapScanner : MonoBehaviour
 
         //}
     }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.layer == 8)
+        {
+            Debug.Log("MAP");
+            //MapManager.Instance.DeactivateMeshing();
+        }
+    }
 
     private void OnTriggerStay(Collider other)
     {
-        Debug.Log($"collision with: {other.gameObject.name}");
-        
+        //Debug.Log($"collision with: {other.gameObject.name}");
+        //if (other.gameObject.layer == 7)
+        //{
+        //    Debug.Log("SCAN");
+        //}
     }
 
     private void OnTriggerExit(Collider other)
     {
-        Debug.Log("left"); 
+        if (other.gameObject.layer == 7)
+        {
+            Debug.Log("SCAN");
+            MeshFilter mf = other.gameObject.GetComponent<MeshFilter>();
+            MapManager.Instance.AddMeshToMap(mf.mesh);
+            Destroy(other.gameObject);
+        }
+        //Debug.Log("left"); 
+        //MapManager.Instance.ActivateMeshing();
+
     }
 }
 

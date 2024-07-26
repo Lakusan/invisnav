@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -171,6 +172,7 @@ public class UIController : MonoBehaviour
                 _scanButton.visible = false;
                 _createLocationButton = _scanMiddleContainer.Q<Button>("CreateLocationButton");
                 _createLocationButton.RegisterCallback<ClickEvent>(OnCreateLocationButtonClicked);
+     
                 break;
             default:
                 this._state = UISTATE.main;
@@ -183,6 +185,8 @@ public class UIController : MonoBehaviour
         if (_navigationLocationName != null) 
         {
             Debug.Log($"Start Navigation with {_navigationLocationName}");
+            //load Map
+            DBManager.Instance.GetLocationByName(_navigationLocationName);
         }
     }
 
@@ -193,8 +197,6 @@ public class UIController : MonoBehaviour
         Debug.Log($"CREATE LOCATION: {_locationNameInputField.value}");
         // Check if Location exists
         string locationName = _locationNameInputField.value;
-        Debug.Log($"locationname: {locationName}");
-        Debug.Log($"locations: {_registeredLocations.locations.Count}");
         Label textContent = _scanMiddleContainer.Q<Label>("TextContent");
 
         if (_registeredLocations.locations.Contains(locationName))
@@ -202,9 +204,11 @@ public class UIController : MonoBehaviour
             Debug.Log($"Location: {locationName} exists");
             textContent.text = "Location " + locationName + " exists, try another name";
         } else {
+            // get created Location
+            _scanLocationName = _locationNameInputField.text;
+            MapManager.Instance.currentLocation = _scanLocationName;
+            Debug.Log($"CREATED LOCATION: {_scanLocationName}");
             InitScanning();
-            // disable UI
-            // enable XR
         }
     }
 
@@ -212,6 +216,15 @@ public class UIController : MonoBehaviour
     {
         if (this._state == UISTATE.scan)
         {
+            //set gps coords
+            List<double> gpsCoords = LocationManager.Instance.GetGPSCoords();
+#if UNITY_EDITOR
+            MapManager.Instance.latitude = 0.0;
+            MapManager.Instance.longitude = 0.0;
+#else
+            MapManager.Instance.latitude = gpsCoords[0];
+            MapManager.Instance.longitude = gpsCoords[1];
+#endif
             // hide current loaded UI elements
             _mainDoc.rootVisualElement.style.display = DisplayStyle.None; 
         }

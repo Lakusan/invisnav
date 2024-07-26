@@ -3,6 +3,7 @@ using UnityEngine;
 public class DBConverter : MonoBehaviour
 {
     public static DBConverter Instance { get; private set; }
+   
     void Awake()
     {
         if (Instance != null && Instance != this)

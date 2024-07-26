@@ -5,44 +5,49 @@ using UnityEngine;
 
 public class Populate : MonoBehaviour
 {
-
     RegisteredLocations registeredLocations;
     RegisteredLocations newLocations;
-    private void Start()
-    {
-        newLocations = new RegisteredLocations();
-        newLocations.locations = new List<string>(); 
 
-        registeredLocations = new RegisteredLocations();
-        registeredLocations.locations = new List<string>(){
-            "SRH",
-            "Cube",
-            "Bibliothek"
+    void Start()
+    {
+
+        registeredLocations = new RegisteredLocations()
+        {
+            locations = new List<string>()
+                 {
+                "TestEnv"
+            },
         };
+
+        foreach (var location in registeredLocations.locations)
+        {
+            Debug.Log($"reg Loc: {location}");
+        }
+       
         PopulateDBWithRegisteredLocations();
-        GetRegisteredLocations();
-     
+        //GetRegisteredLocations();
+
     }
 
     void PopulateDBWithRegisteredLocations()
     {
-        string json = Newtonsoft.Json.JsonConvert.SerializeObject(registeredLocations);
-        Debug.Log(json);
-        RestClient.Put("https://invisnav-default-rtdb.europe-west1.firebasedatabase.app/registeredLocations.json", json);
+        string json = Newtonsoft.Json.JsonConvert.SerializeObject(registeredLocations.locations);
+        Debug.Log($"Json output: {json}");
+        RestClient.Put("https://invisnav-default-rtdb.europe-west1.firebasedatabase.app/registeredLocations/locations.json", json);
     }
     public void GetRegisteredLocations()
     {
         RestClient.Get("https://invisnav-default-rtdb.europe-west1.firebasedatabase.app/registeredLocations.json").Then(response =>
         {
             Debug.Log($"response: {response.Text}");
-            newLocations = JsonConvert.DeserializeObject<RegisteredLocations>(response.Text); ;
+            newLocations= JsonConvert.DeserializeObject<RegisteredLocations>(response.Text); ;
             Debug.Log($"count: {newLocations.locations.Count}");
             foreach (var location in newLocations.locations)
             {
                 Debug.Log($"found: {location}");
             }
         });
-      
+
     }
 
 

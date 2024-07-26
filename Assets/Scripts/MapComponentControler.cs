@@ -9,9 +9,10 @@ public class MapComponentControler : MonoBehaviour
     Vector3[] worldVertices;
     private bool isDone = false;
 
+
     void Start()
     { 
-        //meshFilter = GetComponent<MeshFilter>();
+        meshFilter = GetComponent<MeshFilter>();
         //vertices = meshFilter.mesh.vertices;
         //Vector3 centerVector = meshFilter.mesh.bounds.center;
         //centerVector = transform.TransformPoint(centerVector);
@@ -69,4 +70,18 @@ public class MapComponentControler : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        //Debug.Log($"{gameObject.name} got destroyed");
+        //MapManager.Instance.AddMeshToMap(meshFilter.sharedMesh);
+    }
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.layer == 9)
+        {
+            MeshFilter meshFilter = GetComponent<MeshFilter>();
+            MapManager.Instance.AddMeshToMap(meshFilter.mesh);
+            Destroy(gameObject);
+        }
+    }
 }

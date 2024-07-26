@@ -7,6 +7,20 @@ public class LocationManager : MonoBehaviour
 {
     List<double> lastGpsCoords = new List<double>();
 
+    public static LocationManager Instance { get; private set; }
+
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            Instance = this;
+        }
+    }
+
     public void Start()
     {
         StartCoroutine(GetGPSLocationFromSensors());
@@ -19,7 +33,7 @@ public class LocationManager : MonoBehaviour
     }
 
 
-    IEnumerator GetGPSLocationFromSensors()
+    public IEnumerator GetGPSLocationFromSensors()
     {
         // Check if the user has location service enabled.
         if (!Permission.HasUserAuthorizedPermission(Permission.FineLocation))

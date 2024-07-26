@@ -111,7 +111,6 @@ public class DBTest : MonoBehaviour
             loadedMap = JsonConvert.DeserializeObject<SerializableLocation>(response.Text);
             if (loadedMap != null)
             {
-                Debug.Log($"locationname: {loadedMap.name}");
                 Debug.Log($"Meshes count: {loadedMap.meshes.Count}");
             }
             // convert Serialized Mesh to Unity MeshList
