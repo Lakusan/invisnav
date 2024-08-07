@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6067802325062581217}
   - component: {fileID: 201813412680836097}
   - component: {fileID: 6234109178013297632}
-  - component: {fileID: 5061068402061106602}
+  - component: {fileID: 770145798874140277}
   m_Layer: 7
   m_Name: AR Mesh
   m_TagString: ScanElement
@@ -50,7 +50,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7551388377666944641}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -97,8 +97,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05f6afea2d9d988468dd7dcc5d3a6060, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myPrefab: {fileID: 8948552081142848216, guid: 869284fca02a4ed4a80bf18c9a42312e, type: 3}
---- !u!64 &5061068402061106602
+  wasSeen: 0
+  isColliding: 0
+--- !u!64 &770145798874140277
 MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

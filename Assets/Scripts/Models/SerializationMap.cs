@@ -12,6 +12,9 @@ public class SerializableLocation
     public double latitude { get; set; }
 #nullable disable
     public List<SerializableMesh> meshes { get; set; }
+    public List<string> meshNames { get; set; }
+
+    public List<SerializableAnchor> anchorList { get; set; }
 }
 
 public class SerializableMesh
@@ -26,12 +29,21 @@ public class SerializableMesh
     }
 }
 
-
 public class SerializableVertex
 {
     public float x { get; set; }
     public float y { get; set; }
     public float z { get; set; }
+}
+
+public class SerializableAnchor
+{
+    public string anchorName { get; set; }
+    public string anchorDescription { get; set; }
+    public string attachedMapComponentName { get; set; }
+    public float posX { get; set; }
+    public float posY { get; set; }
+    public float posZ { get; set; }
 }
 
 public class SerializableMap
@@ -42,9 +54,11 @@ public class SerializableMap
     {
         root = new SerializableRoot()
         {
-            location = new SerializableLocation() 
+            location = new SerializableLocation()
             {
-                meshes = new List<SerializableMesh>()
+                meshes = new List<SerializableMesh>(),
+                meshNames = new List<string>(),
+                anchorList = new List<SerializableAnchor>()
             }
         };
     }

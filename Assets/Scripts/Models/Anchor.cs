@@ -2,6 +2,10 @@ using UnityEngine;
 
 public class Anchor : MonoBehaviour
 {
-    public double longitude { get; set; }
-    public double latitude { get; set; }
+    public string anchorName;
+    public string anchorDescription;
+    public string attachedMapComponentName;
+    public float posX;
+    public float posY;
+    public float posZ;
 }

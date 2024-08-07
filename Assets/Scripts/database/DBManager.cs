@@ -33,8 +33,6 @@ public class DBManager : MonoBehaviour
         RestClient.Get("https://invisnav-default-rtdb.europe-west1.firebasedatabase.app/registeredLocations.json").Then(response =>
         {
             registeredLocations = JsonConvert.DeserializeObject<RegisteredLocations>(response.Text);
-            Debug.Log($"got registered Locations: {response.Text}");
-            Debug.Log($"got registered Locations Count : {registeredLocations.locations.Count}");
         });
     }
 
@@ -43,7 +41,7 @@ public class DBManager : MonoBehaviour
         return registeredLocations;
     }
 
-    public void StoreNewLocation(Dictionary<string, Mesh> meshDict)
+    public void StoreNewLocation(Dictionary<string, Mesh> meshDict, List<Anchor> anchorlist)
     {
         SerializableMap newMap = new SerializableMap();
 
@@ -52,18 +50,26 @@ public class DBManager : MonoBehaviour
             Mesh mesh = entry.Value;
             SerializableMesh serializableMesh = DBConverter.SerializeMesh(mesh);
             newMap.root.location.meshes.Add(serializableMesh);
+            newMap.root.location.meshNames.Add(entry.Key);
+
         }
 #if UNITY_EDITOR
         newMap.root.location.longitude = 0.0;
         newMap.root.location.latitude = 0.0;
 #else
-        newMap.root.location.longitude = MapManager.Instance.longitude;
-        newMap.root.location.latitude = MapManager.Instance.latitude;
+        newMap.root.location.longitude = MapManager.Instance.longitudeOrigin;
+        newMap.root.location.latitude = MapManager.Instance.latitudeOrigin;
 #endif
+        // add anchors
+        foreach(Anchor anchor in anchorlist)
+        {
+            newMap.root.location.anchorList.Add(DBConverter.SerializeAnchor(anchor));
+        }
         string mapJson = Newtonsoft.Json.JsonConvert.SerializeObject(newMap.root.location);
         if (mapJson != null)
         {
-            RestClient.Put("https://invisnav-default-rtdb.europe-west1.firebasedatabase.app/locations/" + MapManager.Instance.currentLocation + ".json", mapJson);
+            var response = RestClient.Put("https://invisnav-default-rtdb.europe-west1.firebasedatabase.app/locations/" + MapManager.Instance.currentLocation + ".json", mapJson);
+            Debug.Log($"RESPONSE: {response.ToString()}");
         }
         // register new location
         SaveRegisteredLocation(MapManager.Instance.currentLocation);
@@ -89,50 +95,33 @@ public class DBManager : MonoBehaviour
 
     public void GetLocationByName(string name) 
     {
-        //// UI Select registered Location and deserialize it
-        //SerializableMap loadedMap = new SerializableMap();
-        //RestClient.Get("https://invisnav-default-rtdb.europe-west1.firebasedatabase.app/locations/" + name +".json").Then(response =>
-        //{
-        //    Debug.Log($"loaded map Response: {response.Text}");
-        //    loadedMap = JsonConvert.DeserializeObject<SerializableMap>(response.Text);
-        //    Debug.Log($"loaded map: {loadedMap.root.location.meshes.Count}");
-        //});
         SerializableLocation loadedMap = new();
 
         RestClient.Get("https://invisnav-default-rtdb.europe-west1.firebasedatabase.app/locations/" + name + ".json").Then(response =>
         {
-            Debug.Log($"response: {response.Text}");
             loadedMap = JsonConvert.DeserializeObject<SerializableLocation>(response.Text);
             if (loadedMap != null)
             {
-                Debug.Log($"Meshes count: {loadedMap.meshes.Count}");
-            } else
+                // Add to Map Dict 
+                int indexValue = 0;
+                foreach (var mesh in loadedMap.meshes)
+                {
+                    //MapManager.Instance.AddMeshToLoadedMap(DBConverter.DeserializeMesh(mesh), indexValue.ToString());
+                    string meshName = loadedMap.meshNames[indexValue];
+                    MapManager.Instance.AddMeshToLoadedMap(DBConverter.DeserializeMesh(mesh), meshName);
+
+                    indexValue++;
+                }
+                foreach(SerializableAnchor a in loadedMap.anchorList)
+                {
+                    Debug.Log($"GEtLocationByName serializable anchor posx: {a.posX}");
+
+                    MapManager.Instance.AddAnchorToLoadedMap(DBConverter.DeserializeAnchor(a));
+                }
+            }
+            else
             {
                 Debug.Log("loaded map is null");
-            }
-            // convert Serialized Mesh to Unity MeshList
-            List<Mesh> meshes = new List<Mesh>();
-            foreach (var mesh in loadedMap.meshes)
-            {
-                meshes.Add(DBConverter.DeserializeMesh(mesh));
-            }
-            Debug.Log($"Deserialized Meshes count: {meshes.Count}");
-
-            // create gos for testing
-            int iterator = 0;
-            foreach (Mesh newMesh in meshes)
-            {
-                Debug.Log($"iterator {iterator}");
-                GameObject go = new GameObject();
-                go.AddComponent<MeshFilter>();
-                go.AddComponent<MeshRenderer>();
-                go.transform.position = new Vector3(go.transform.position.x, go.transform.position.y + 1.1176f, go.transform.position.z);
-                MeshFilter mf = go.GetComponent<MeshFilter>();
-                newMesh.RecalculateBounds();
-                newMesh.RecalculateNormals();
-                mf.mesh = newMesh;
-                mf.sharedMesh = newMesh;
-                iterator++;
             }
         });
     }

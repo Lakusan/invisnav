@@ -68,4 +68,35 @@ public class DBConverter : MonoBehaviour
 
         return mesh;
     }
+
+    public static Anchor DeserializeAnchor(SerializableAnchor serializableAnchor)
+    {
+        Debug.Log($"DeserializeAnchor: {serializableAnchor.posX}");
+        Anchor anchor = new Anchor()
+        {
+            anchorName = serializableAnchor.anchorName,
+            anchorDescription = serializableAnchor.anchorDescription,
+            attachedMapComponentName = serializableAnchor.attachedMapComponentName,
+            posX = serializableAnchor.posX,
+            posY = serializableAnchor.posY,
+            posZ = serializableAnchor.posZ
+        };
+
+        return anchor;
+    }
+
+    public static SerializableAnchor SerializeAnchor(Anchor anchor)
+    {
+        SerializableAnchor serializeableAnchor = new SerializableAnchor()
+        {
+            anchorName = anchor.anchorName,
+            anchorDescription = anchor.anchorDescription,
+            attachedMapComponentName = anchor.attachedMapComponentName,
+            posX = anchor.posX,
+            posY = anchor.posY,
+            posZ = anchor.posZ
+        };
+
+        return serializeableAnchor;
+    }
 }

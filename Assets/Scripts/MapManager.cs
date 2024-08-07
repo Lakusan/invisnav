@@ -1,10 +1,6 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using Unity.XR.CoreUtils;
-using UnityEditor;
-using UnityEditor.Build;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 
@@ -13,18 +9,29 @@ using UnityEngine.XR.ARFoundation;
 
 public class MapManager : MonoBehaviour
 {
+
     public static MapManager Instance { get; private set; }
 
     [SerializeField] ARMeshManager m_arMeshManager;
     [SerializeField] MeshFilter m_meshPrefab;
     [SerializeField] XROrigin m_xrOrigin;
-
+    [SerializeField] GameObject mapContainer;
+    [SerializeField] Material MapMaterial;
+    [SerializeField] GameObject anchorPrefab;
+    [SerializeField] GameObject anchorContainer;
+    [SerializeField] GameObject anchorNavPrefab;
 
     public static Dictionary<string, Mesh> meshDict;
     public string currentLocation = string.Empty;
 
-    public double latitude = 0.0;
-    public double longitude = 0.0;
+    public double latitudeOrigin = 0.0;
+    public double longitudeOrigin = 0.0;
+
+    public List<Anchor> anchorList = new List<Anchor>();
+    [SerializeField]
+    public Vector3 LastTackerPositionOnNavMesh;
+
+    public List<GameObject> navigateableAnchors = new List<GameObject>();
 
     void Awake()
     {
@@ -41,6 +48,7 @@ public class MapManager : MonoBehaviour
     void Start()
     {
         meshDict = new Dictionary<string, Mesh> ();
+        LastTackerPositionOnNavMesh = Vector3.zero;
     }
 
     IEnumerator WaitForMeshingEventInit()
@@ -117,9 +125,10 @@ public class MapManager : MonoBehaviour
         //}
         //if (m.updated != null && m.updated.Count > 0)
         //{
-        //    foreach (MeshFilter mf in m.removed)
+        //    foreach (MeshFilter mf in m.updated)
         //    {
         //        meshDict[mf.name] = mf.sharedMesh;
+        //        UpdateMapComponent(mf.mesh);
         //    }
         //}
         //if (m.updated != null && m.updated.Count > 0)
@@ -150,8 +159,8 @@ public class MapManager : MonoBehaviour
     public void DeactivateMeshing()
     {
       m_arMeshManager.enabled = false;
-      MyConsole.instance.Log("Meshing state" + m_arMeshManager.enabled);
-      Debug.Log($"meshing {m_arMeshManager.enabled}");
+        MyConsole.instance.Log("Meshing state" + m_arMeshManager.enabled);
+        Debug.Log($"meshing {m_arMeshManager.enabled}");
     }
     public void ActivateMeshing()
     {
@@ -169,41 +178,28 @@ public class MapManager : MonoBehaviour
 
     public void StoreMap()
     {
-        // deaktivate meshing
         toggleMeshing();
-        DBManager.Instance.StoreNewLocation(meshDict);
+        DBManager.Instance.StoreNewLocation(meshDict, anchorList);
         // redirect to main menu
     }
 
     private void MapRenderer(string name, Mesh mesh)
     {
-        //foreach (KeyValuePair<string, Mesh> entry in meshDict)
-        //{
-        //    GameObject gO = new GameObject();
-        //    gO.name = entry.Key;
-        //    gO.AddComponent<MeshFilter>();
-        //    gO.AddComponent<MeshRenderer>();
-        //    MeshFilter mf = gO.GetComponent<MeshFilter>();
-        //    mf.mesh = entry.Value;
-        //    MeshRenderer mr = gO.GetComponent<MeshRenderer>();
-        //    mr.material.SetColor("_Color", Color.blue);
-        //    Instantiate(gO);
-        //}
         GameObject gO = new GameObject();
+        gO.transform.SetParent(mapContainer.transform);
         gO.SetActive(false);
-        gO.transform.position = new Vector3(gO.transform.position.x, gO.transform.position.y + 1.1176f, gO.transform.position.z);
+        //gO.transform.position = new Vector3(gO.transform.position.x, gO.transform.position.y + 1.1176f, gO.transform.position.z);
         gO.name = name;
         gO.AddComponent<MeshFilter>();
-        gO.AddComponent<MeshRenderer>();
+        MeshRenderer mr = gO.AddComponent<MeshRenderer>();
+        mr.enabled = true;
         MeshCollider meshCollider = gO.AddComponent<MeshCollider>();
         MeshFilter mf = gO.GetComponent<MeshFilter>();
         mf.mesh = mesh;
-        MeshRenderer mr = gO.GetComponent<MeshRenderer>();
-        mr.material.SetColor("_Color", Color.blue);
+        mr.material = MapMaterial;
         meshCollider.sharedMesh = mesh;
         gO.layer = 8;
         gO.SetActive(true);
-        Debug.Log("Render Meshes");
     }
 
     public void AddMeshToMap(Mesh mesh) 
@@ -213,6 +209,80 @@ public class MapManager : MonoBehaviour
         {
             meshDict.Add(newMeshName, mesh);
             MapRenderer(newMeshName, mesh);
+        } else
+        {
+            UpdateMapComponent(mesh);
         }
+    }
+
+    public void AddMeshToLoadedMap(Mesh mesh, string index)
+    {
+        string newMeshName = index;
+        if (!meshDict.ContainsKey(newMeshName))
+        {
+            meshDict.Add(newMeshName, mesh);
+            MapRenderer(newMeshName, mesh);
+        }
+    }
+
+    public void AddAnchorToLoadedMap(Anchor anchor)
+    {
+        Debug.Log($"Add Anchor to Loaded Map: {anchor.posX}");
+
+        anchorList.Add(anchor);
+        RenderAnchor(anchor);
+    }
+    public void RenderAnchor(Anchor anchor)
+    {
+        // new GO with anchor name
+        Debug.Log($"anchorname : {anchor.anchorName}");
+        Debug.Log($"anchor desc : {anchor.anchorDescription}");
+        Debug.Log($"posX : {anchor.posX}");
+        Debug.Log($"posY : {anchor.posY}");
+        Debug.Log($"posZ : {anchor.posZ}");
+
+        GameObject go = Instantiate(anchorNavPrefab);
+        go.SetActive(false);
+        go.transform.parent = anchorContainer.transform;
+        // anchor position
+        Vector3 position = new Vector3(anchor.posX, anchor.posY, anchor.posZ);
+        go.transform.position = position;
+        // anchor description
+        NavAnchorController nac = go.GetComponent<NavAnchorController>();
+        nac.SetAnchorNameToTMP(anchor.anchorName);
+        nac.SetAnchorDescriptionToTMP(anchor.anchorDescription);
+        Debug.Log($"GO : {go.name}");
+        go.SetActive(true);
+        navigateableAnchors.Add(go);
+    }
+
+    public void UpdateMapComponent(Mesh mesh)
+    {
+       string meshname = mesh.name + "-MAP";
+       Transform go = mapContainer.gameObject.transform.Find(meshname);
+       go.gameObject.SetActive(false);
+       MeshFilter filter = go.GetComponent<MeshFilter>();
+       MeshRenderer mr = go.GetComponent<MeshRenderer>();
+        mr.material.color = Color.cyan;
+       filter.mesh = mesh;
+       go.gameObject.SetActive(true);
+    }
+
+    public void DeleteMapComponent(string name)
+    {
+        if (meshDict.ContainsKey(name))
+        {
+            meshDict.Remove(name);
+        }
+    }
+
+    public Vector3 GetLastTrackerPosition()
+    {
+        return LastTackerPositionOnNavMesh;
+    }
+
+    public void AddAnchor(Anchor anchor)
+    {
+        anchorList.Add(anchor);
     }
 }

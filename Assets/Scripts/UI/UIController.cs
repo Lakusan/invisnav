@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -154,7 +155,6 @@ public class UIController : MonoBehaviour
                 _radioButtonGroup.RegisterValueChangedCallback(v =>
                 {
                     _navigationLocationName = _registeredLocations.locations[v.newValue];
-                    Debug.Log($"Value Changed: {_navigationLocationName}");
                 });
                 _backButton.visible = true;
                 _scanButton.visible = false;
@@ -187,6 +187,7 @@ public class UIController : MonoBehaviour
             Debug.Log($"Start Navigation with {_navigationLocationName}");
             //load Map
             DBManager.Instance.GetLocationByName(_navigationLocationName);
+            InitNavigation(); 
         }
     }
 
@@ -219,16 +220,35 @@ public class UIController : MonoBehaviour
             //set gps coords
             List<double> gpsCoords = LocationManager.Instance.GetGPSCoords();
 #if UNITY_EDITOR
-            MapManager.Instance.latitude = 0.0;
-            MapManager.Instance.longitude = 0.0;
+            MapManager.Instance.latitudeOrigin = 0.0;
+            MapManager.Instance.longitudeOrigin = 0.0;
 #else
-            MapManager.Instance.latitude = gpsCoords[0];
-            MapManager.Instance.longitude = gpsCoords[1];
+            MapManager.Instance.latitudeOrigin = gpsCoords[0];
+            MapManager.Instance.longitudeOrigin = gpsCoords[1];
 #endif
             // hide current loaded UI elements
             _mainDoc.rootVisualElement.style.display = DisplayStyle.None; 
         }
         // enable AR Session
         MapManager.Instance.toggleMeshing();
+    }
+
+    private void InitNavigation()
+    {
+#if UNITY_EDITOR
+#else
+        // Get Map GPS Cords which were saved with the map
+        // get User GPS Cords
+        // Align Loaded Map with GPS of start Postion
+#endif
+        // load anchors
+        Debug.Log("UI Controller Init Navigation");
+        // Draw Line to Start Location
+
+        // Wait until player is on Start Position/ On Map
+
+        // hide current loaded UI Elements
+        _mainDoc.rootVisualElement.style.display = DisplayStyle.None;
+        NavMeshController.Instance.BakeNavMesh();
     }
 }
