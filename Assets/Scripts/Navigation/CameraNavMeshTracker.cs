@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using System.ComponentModel.Design;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -10,6 +12,8 @@ public class CameraNavMeshTracker : MonoBehaviour
     [SerializeField]
     public GameObject trackerGO;
     private Rigidbody trackerRigidbody;
+    [SerializeField]
+    public GameObject mainCamera;
 
     [SerializeField]
     public float distanceThreshold = 20f;
@@ -17,10 +21,16 @@ public class CameraNavMeshTracker : MonoBehaviour
     public string currentState;
     [SerializeField]
     public bool dropTracker = true;
+    [SerializeField]
+    private float distanceCamTracker = 0.0f;
+    [SerializeField]
+    private float distanceCamGround = 0.0f;
 
     private TRACKER_STATE state;
 
     private NavMeshAgent trackerNavMeshAgent;
+
+    private float groundLevel = 0.0f;
 
     private enum TRACKER_STATE
     {
@@ -42,6 +52,12 @@ public class CameraNavMeshTracker : MonoBehaviour
     void Update()
     {
       currentState = this.state.ToString();
+        //if(MapManager.Instance.LastTackerPositionOnNavMesh.y != 0.0f)
+        //{
+        //    groundLevel = Math.Abs(MapManager.Instance.LastTackerPositionOnNavMesh.y) +1;
+        //    distanceThreshold = groundLevel;
+        //} 
+       
         if (dropTracker)
         {
             trackerRigidbody.useGravity = true;
@@ -61,13 +77,15 @@ public class CameraNavMeshTracker : MonoBehaviour
                 }
                 break;
             case TRACKER_STATE.shouldUpdate:
-                // coroutinge to find navmesh
                 StartCoroutine(FindNavMeshWithTracker());
                 break;
             case TRACKER_STATE.isUpdating:
             
                 break;
             case TRACKER_STATE.isOnNavMesh:
+                trackerNavMeshAgent.enabled = true;
+                // if navigating update path
+                NavMeshPathDrawer.Instance.Navigate();
                 if (IsTrackerOutOfRange())
                 {
                     trackerNavMeshAgent.enabled = false;
@@ -86,9 +104,19 @@ public class CameraNavMeshTracker : MonoBehaviour
         {
             if (IsTrackerOnNavMesh())
             {
+                //groundLevel = Math.Abs(MapManager.Instance.LastTackerPositionOnNavMesh.y) + 1f;
+                //distanceThreshold = groundLevel;
                 this.state = TRACKER_STATE.isOnNavMesh;
-                trackerNavMeshAgent.enabled = true;
+                //trackerNavMeshAgent.enabled = true;
                 yield break;
+            }
+            if(distanceThreshold < 100)
+            {
+
+                distanceThreshold++;
+            } else
+            {
+                distanceThreshold = 0;
             }
             yield return null;
         }
@@ -98,8 +126,8 @@ public class CameraNavMeshTracker : MonoBehaviour
     public void CalculatePathToAnchor(Vector3 anchorPos)
     {
         NavMeshPath path = new NavMeshPath();
-        Vector3 origin = Camera.main.transform.position;
-        NavMesh.CalculatePath(Camera.main.transform.position, anchorPos, NavMesh.AllAreas, path);
+        Vector3 origin = mainCamera.transform.position;
+        NavMesh.CalculatePath(mainCamera.transform.position, anchorPos, NavMesh.AllAreas, path);
         if (path != null)
         {
             for (int i = 0; i < path.corners.Length; i++)
@@ -109,14 +137,16 @@ public class CameraNavMeshTracker : MonoBehaviour
         }
         else
         {
-            Debug.Log("Path is Null");
+            Debug.Log("CamNavMeshTracker: Path is Null");
         }
     }
     private void DropTracker()
     {
         trackerRigidbody.velocity = Vector3.zero;
+        distanceThreshold = 0;  
         DisableGravityOnTracker();
-        trackerGO.transform.position = Camera.main.transform.position;
+        trackerNavMeshAgent.enabled = false;
+        trackerGO.transform.position = mainCamera.transform.position;
         EnableGravitiyOnTracker();
         this.state = TRACKER_STATE.isFalling;
     }
@@ -147,16 +177,24 @@ public class CameraNavMeshTracker : MonoBehaviour
     {
         if (this.state == TRACKER_STATE.isFalling || this.state == TRACKER_STATE.isUpdating)
         {
-            if (Mathf.Abs(Camera.main.transform.position.y - trackerGO.transform.position.y) > distanceThreshold)
+            if (Mathf.Abs(mainCamera.transform.position.y - trackerGO.transform.position.y) > distanceThreshold)
             {
                 return true;
             }
         }
         else if(this.state == TRACKER_STATE.isOnNavMesh)
         {
-            if(Vector3.Distance(Camera.main.transform.position, trackerGO.transform.position) > (distanceThreshold/10))
+            Debug.DrawLine(mainCamera.transform.position, trackerGO.transform.position, Color.black);
+            Vector3 groundVector = RayCastToGround();
+            if (groundVector != Vector3.zero)
             {
-                return true;
+                distanceCamTracker = Math.Abs(Vector3.Distance(mainCamera.transform.position, trackerGO.transform.position));
+                distanceCamGround = Math.Abs(Vector3.Distance(mainCamera.transform.position, groundVector));
+                if (distanceCamTracker > distanceCamGround)
+                {
+                    Debug.DrawLine(mainCamera.transform.position, trackerGO.transform.position, Color.red);
+                    return true;
+                }
             }
         }
         return false;
@@ -165,5 +203,21 @@ public class CameraNavMeshTracker : MonoBehaviour
     private void SetLastTrackerPosition(Vector3 position)
     {
         MapManager.Instance.LastTackerPositionOnNavMesh = position;
+    }
+
+    private Vector3 RayCastToGround()
+    {
+        RaycastHit hit;
+        Debug.DrawRay(mainCamera.transform.position, Vector3.down * 100, Color.cyan);
+        if (Physics.Raycast(mainCamera.transform.position, Vector3.down * 100,  out hit))
+        {
+            if(hit.collider.gameObject.layer == 10)
+            {
+                Debug.DrawRay(mainCamera.transform.position, hit.point, Color.yellow);
+
+                return hit.point;
+            }
+        }
+        return Vector3.zero;
     }
 }

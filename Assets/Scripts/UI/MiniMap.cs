@@ -3,12 +3,6 @@ using UnityEngine;
 
 public class MiniMap : MonoBehaviour
 {
-
-    void Start()
-    {
-        
-    }
-
     void Update()
     {
             transform.position = new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y + 30, Camera.main.transform.position.z);

@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class UIController : MonoBehaviour
 {
     public UIDocument _mainDoc;
-    private UISTATE _state;
+    public static UIController Instance { get; private set; }
+
+    public UISTATE _state;
     public enum UISTATE
     {
         main,
@@ -17,6 +18,12 @@ public class UIController : MonoBehaviour
     // ARMeshing
     GameObject _arMeshing;
 
+    // anchormanager 
+    [SerializeField] private GameObject _anchorManager;
+    // navigation navbar
+    [SerializeField] private GameObject _navManager;
+    // mapscanner 
+    [SerializeField] private GameObject _mapScanner;
     // runtime navbar reference
     private GameObject _navBar;
     // layout elements
@@ -56,6 +63,14 @@ public class UIController : MonoBehaviour
 
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            Instance = this;
+        }
         _mainDoc = GetComponent<UIDocument>();
         _mainContainer = _mainDoc.rootVisualElement.Q<VisualElement>("MainContainer");
         _mainTopContainer = _mainContainer.Q<VisualElement>("TopContainer");
@@ -218,10 +233,10 @@ public class UIController : MonoBehaviour
         if (this._state == UISTATE.scan)
         {
             //set gps coords
-            List<double> gpsCoords = LocationManager.Instance.GetGPSCoords();
+            List<float> gpsCoords = LocationManager.Instance.GetGPSCoords();
 #if UNITY_EDITOR
-            MapManager.Instance.latitudeOrigin = 0.0;
-            MapManager.Instance.longitudeOrigin = 0.0;
+            MapManager.Instance.latitudeOrigin = 0.0f;
+            MapManager.Instance.longitudeOrigin = 0.0f;
 #else
             MapManager.Instance.latitudeOrigin = gpsCoords[0];
             MapManager.Instance.longitudeOrigin = gpsCoords[1];
@@ -241,12 +256,13 @@ public class UIController : MonoBehaviour
         // get User GPS Cords
         // Align Loaded Map with GPS of start Postion
 #endif
-        // load anchors
-        Debug.Log("UI Controller Init Navigation");
-        // Draw Line to Start Location
-
-        // Wait until player is on Start Position/ On Map
-
+        // deactivate Modules 
+        // anchormanager off
+        _anchorManager.SetActive(false);
+        // navigation UI on
+        _navManager.SetActive(true);
+        // deactivate MapScanner
+        _mapScanner.SetActive(false);
         // hide current loaded UI Elements
         _mainDoc.rootVisualElement.style.display = DisplayStyle.None;
         NavMeshController.Instance.BakeNavMesh();

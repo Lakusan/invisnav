@@ -24,14 +24,15 @@ public class MapManager : MonoBehaviour
     public static Dictionary<string, Mesh> meshDict;
     public string currentLocation = string.Empty;
 
-    public double latitudeOrigin = 0.0;
-    public double longitudeOrigin = 0.0;
+    public float latitudeOrigin = 0.0f;
+    public float longitudeOrigin = 0.0f;
 
     public List<Anchor> anchorList = new List<Anchor>();
     [SerializeField]
     public Vector3 LastTackerPositionOnNavMesh;
 
     public List<GameObject> navigateableAnchors = new List<GameObject>();
+
 
     void Awake()
     {
@@ -180,7 +181,7 @@ public class MapManager : MonoBehaviour
     {
         toggleMeshing();
         DBManager.Instance.StoreNewLocation(meshDict, anchorList);
-        // redirect to main menu
+        // TODO: redirect to main menu
     }
 
     private void MapRenderer(string name, Mesh mesh)
@@ -243,6 +244,7 @@ public class MapManager : MonoBehaviour
 
         GameObject go = Instantiate(anchorNavPrefab);
         go.SetActive(false);
+        go.name = anchor.anchorName;
         go.transform.parent = anchorContainer.transform;
         // anchor position
         Vector3 position = new Vector3(anchor.posX, anchor.posY, anchor.posZ);
@@ -284,5 +286,45 @@ public class MapManager : MonoBehaviour
     public void AddAnchor(Anchor anchor)
     {
         anchorList.Add(anchor);
+    }
+
+    public void AlignLoadedMap()
+    {
+        // gps origin
+        // gps device
+
+        // distance + bearing
+        // XYZ unity origin
+
+        // align Map
+        //LocationManager.Instance.GetGPSLocationFromSensors();
+        ////Debug.DrawRay(originGO.transform.position, rotationToObject, Color.red);
+        ////calculate Distance
+        //float distanceToObject = LocationManager.Instance.CalculateVincentyDistance(
+        //    latitudeOrigin, 
+        //    longitudeOrigin,
+        //    LocationManager.Instance.lastGpsCoords[0],
+        //    LocationManager.Instance.lastGpsCoords[0]);
+        //LocationManager.Instance.CalculateBearing();
+        //Vector3 north = GetNorthVector(originGO.transform);
+        //DrawBearingAndNorth(originGO.transform.position, rotationToObject, originGO.transform);
+
+        Vector3 mapPos =  LocationManager.Instance.GetUnityXYZFromGPS(latitudeOrigin,longitudeOrigin);
+        mapContainer.transform.position = mapPos;
+    }
+
+    public GameObject FindAnchorGO(string anchorName)
+    {
+            GameObject foundObject = anchorContainer.transform.Find(anchorName).gameObject;
+
+            if (foundObject != null)
+            {
+                return foundObject;
+            }
+            else
+            {
+                Debug.LogError("GameObject with name '" + name + "' not found!");
+                return null;
+            }
     }
 }

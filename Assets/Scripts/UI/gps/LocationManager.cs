@@ -6,7 +6,7 @@ using UnityEngine.Android;
 
 public class LocationManager : MonoBehaviour
 {
-    List<double> lastGpsCoords = new List<double>();
+    public List<float> lastGpsCoords = new List<float>();
     private const float EarthRadius = 6371e3f;
     public static LocationManager Instance { get; private set; }
 
@@ -26,7 +26,7 @@ public class LocationManager : MonoBehaviour
         StartCoroutine(GetGPSLocationFromSensors());
     }
 
-    public List<double> GetGPSCoords()
+    public List<float> GetGPSCoords()
     {
         StartCoroutine (GetGPSLocationFromSensors());
         return this.lastGpsCoords;
@@ -86,31 +86,31 @@ public class LocationManager : MonoBehaviour
     }
 
     // Calculate distance using Vincenty's formula
-    private double CalculateVincentyDistance(double lat1, double lon1, double lat2, double lon2)
+    public float CalculateVincentyDistance(float lat1, float lon1, float lat2, float lon2)
     {
         lat1 = Mathf.Deg2Rad * lat1;
         lon1 = Mathf.Deg2Rad * lon1;
         lat2 = Mathf.Deg2Rad * lat2;
         lon2 = Mathf.Deg2Rad * lon2;
 
-        double dLon = lon2 - lon1;
+        float dLon = lon2 - lon1;
 
-        double numerator = Mathf.Pow(Mathf.Cos((float)lat2) * Mathf.Sin((float)dLon), 2) +
+        float numerator = Mathf.Pow(Mathf.Cos((float)lat2) * Mathf.Sin((float)dLon), 2) +
                            Mathf.Pow(Mathf.Cos((float)lat1) * Mathf.Sin((float)lat2) -
                                      Mathf.Sin((float)lat1) * Mathf.Cos((float)lat2) * Mathf.Cos((float)dLon), 2);
-        double denominator = Mathf.Sin((float)lat1) * Mathf.Sin((float)lat2) +
+        float denominator = Mathf.Sin((float)lat1) * Mathf.Sin((float)lat2) +
                              Mathf.Cos((float)lat1) * Mathf.Cos((float)lat2) * Mathf.Cos((float)dLon);
 
-        double deltaSigma = Mathf.Atan2(Mathf.Sqrt((float)numerator), (float)denominator);
+        float deltaSigma = Mathf.Atan2(Mathf.Sqrt((float)numerator), (float)denominator);
 
-        double distance = EarthRadius * deltaSigma;
+        float distance = EarthRadius * deltaSigma;
 
         return distance;
     }
     // frist lat lng pair is reference point
     // second destination
     // bearin is radius in which destination from perspective of reference lies
-    private Quaternion CalculateBearing(double lat1, double lon1, double lat2, double lon2)
+    public Quaternion CalculateBearing(float lat1, float lon1, float lat2, float lon2)
     {
         // Convert degrees to radians
         double lat1Rad = Mathf.Deg2Rad * (float)lat1;
@@ -148,17 +148,18 @@ public class LocationManager : MonoBehaviour
         // Calculate north direction
         Vector3 northDirection = GetNorthVector(referenceObject);
         // Draw bearing as red ray
-        //Debug.DrawRay(referenceObject.transform.position, bearingDirection * (int), Color.red);
+        // Debug.DrawRay(referenceObject.transform.position, bearingDirection * (int), Color.red);
         // Draw north as blue ray
-        //Debug.DrawRay(referenceObject.transform.position, northDirection * 10, Color.blue);
+        // Debug.DrawRay(referenceObject.transform.position, northDirection * 10, Color.blue);
     }
     // get unity Position from gps coords
-    public Vector3 GetUnityXYZFromGPS(double lat1, double lon1, double lat2, double lon2)
+    public Vector3 GetUnityXYZFromGPS(float lat, float lon)
     {
+        GetGPSLocationFromSensors();
         // get distance in meters from origin to object
-        double distance = CalculateVincentyDistance(lat1, lon1, lat2, lon2);
+        double distance = CalculateVincentyDistance(lastGpsCoords[0], lastGpsCoords[1], lat, lon);
         // get direction vector from origon to obejct
-        Quaternion bearing = CalculateBearing(lat1, lon1, lat2, lon2);
+        Quaternion bearing = CalculateBearing(lastGpsCoords[0], lastGpsCoords[1], lat, lon);
         Vector3 bearingVector = bearing * (Vector3.forward * (int)distance);
         // create Vector3 for object placement
         return bearingVector;
