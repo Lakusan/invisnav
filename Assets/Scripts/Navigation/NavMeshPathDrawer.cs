@@ -1,3 +1,4 @@
+using System;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
@@ -10,6 +11,8 @@ public class NavMeshPathDrawer : MonoBehaviour
     [SerializeField] private NavMeshAgent cameraTrackerAgent;
     [SerializeField] private GameObject anchorManager;
     [SerializeField] private GameObject uiContainer;
+    [SerializeField] private GameObject target;
+
 
     public static NavMeshPathDrawer Instance { get; private set; }
 
@@ -30,6 +33,20 @@ public class NavMeshPathDrawer : MonoBehaviour
         lineRenderer.enabled = false;
         anchorManager.SetActive(false);
     }
+    private void Update()
+    {
+        //if (target)
+        //{
+        //    NavigateToTarget(target);
+        //}
+    }
+
+    //private void NavigateToTarget(GameObject target)
+    //{
+    //    lineRenderer.enabled = true;
+    //    //SetDestinationAnchor(target);
+    //    CalculatePathToAnchor(target.transform.position);
+    //}
 
     public void SetDestinationAnchor(GameObject destinationAnchor)
     {
@@ -45,23 +62,29 @@ public class NavMeshPathDrawer : MonoBehaviour
             lineRenderer.SetPosition(i, corners);
         }
     }
-
+    private NavMeshPath lastPath = null;
     public NavMeshPath CalculatePathToAnchor(Vector3 anchorPos)
     {
         NavMeshPath path = new NavMeshPath();
         Vector3 origin = cameraTrackerAgent.gameObject.transform.position;
         NavMesh.CalculatePath(origin, anchorPos, NavMesh.AllAreas, path);
         Debug.Log($"PaTH: {path.corners.Length}");
-        if (path.corners.Length > 2)
+        if (path.corners.Length > 0)
         {
             lineRenderer.positionCount = path.corners.Length;
             lineRenderer.SetPositions(path.corners);
+            lastPath = path;
             return path;
+        } else if (path.corners.Length == 0)
+        {
+            lineRenderer.positionCount = lastPath.corners.Length;
+            lineRenderer.SetPositions(lastPath.corners);
+
+            return lastPath;
         }
         else
         {
             Debug.Log("Path is Null");
-            lineRenderer.positionCount = 0;
             return null;
         }
     }

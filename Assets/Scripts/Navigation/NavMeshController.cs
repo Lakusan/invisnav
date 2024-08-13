@@ -24,10 +24,12 @@ public class NavMeshController : MonoBehaviour
     }
     private void Update()
     {
-        if (MapManager.meshDict.Count > 0)
-        {
-            BakeNavMesh();
-        }
+        BakeNavMesh();
+
+        //if (MapManager.meshDict.Count > 0)
+        //{
+        //    BakeNavMesh();
+        //}
     }
 
     public void BakeNavMesh()

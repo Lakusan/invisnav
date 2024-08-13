@@ -20,6 +20,10 @@ public class MapManager : MonoBehaviour
     [SerializeField] GameObject anchorPrefab;
     [SerializeField] GameObject anchorContainer;
     [SerializeField] GameObject anchorNavPrefab;
+    [SerializeField] GameObject mapTilePrefab;
+    [SerializeField] GameObject mapTileContainer;
+
+    [SerializeField] public Dictionary<string, string> tilesDict;
 
     public static Dictionary<string, Mesh> meshDict;
     public string currentLocation = string.Empty;
@@ -49,6 +53,7 @@ public class MapManager : MonoBehaviour
     void Start()
     {
         meshDict = new Dictionary<string, Mesh> ();
+        tilesDict = new Dictionary<string, string> ();
         LastTackerPositionOnNavMesh = Vector3.zero;
     }
 
@@ -71,6 +76,7 @@ public class MapManager : MonoBehaviour
     }
     public void map(ARMeshesChangedEventArgs m)
     {
+        
         //if (m.added != null && m.added.Count > 0)
         //{
         //    foreach (MeshFilter mf in m.added)
@@ -326,5 +332,22 @@ public class MapManager : MonoBehaviour
                 Debug.LogError("GameObject with name '" + name + "' not found!");
                 return null;
             }
+    }
+
+    public void TryRenderNewTile(Vector3 position)
+    {
+        if (!tilesDict.ContainsKey(position.ToString()))
+        {
+            GameObject newTile = Instantiate(mapTilePrefab, position, Quaternion.identity);
+            //GameObject newTile = new ;
+            //MeshFilter mf = newTile.AddComponent<MeshFilter>();
+            //mf.mesh = gameObject.GetComponent<MeshFilter>().mesh;
+            //newTile.transform.position = gameObject.transform.position + direction;
+            //newTile.transform.rotation = gameObject.transform.rotation;
+            //newTile.transform.position = direction;
+            newTile.SetActive(false);
+            newTile.transform.parent = mapTileContainer.transform;
+            newTile.SetActive(true);
+        }
     }
 }

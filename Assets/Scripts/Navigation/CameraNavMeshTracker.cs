@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.ComponentModel.Design;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -220,4 +219,12 @@ public class CameraNavMeshTracker : MonoBehaviour
         }
         return Vector3.zero;
     }
+
+
+    // remove Debug methods
+    // If path is not 0 render path
+    // of path is null -> use last path
+    // If tacker is not on navmesh -> no path
+    // render path always even if calc not wotrking
+
 }

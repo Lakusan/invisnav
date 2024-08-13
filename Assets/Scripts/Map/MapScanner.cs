@@ -61,8 +61,11 @@ public class MapScanner : MonoBehaviour
 
         //}
     }
- 
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log("MapScanner");
+    }
 
 }
 

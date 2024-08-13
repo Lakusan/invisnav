@@ -1,7 +1,4 @@
-using JetBrains.Annotations;
-using System;
 using System.Collections.Generic;
-using System.Transactions;
 using TMPro;
 using UnityEngine;
 
@@ -65,7 +62,6 @@ public class NavMeshUIController : MonoBehaviour
     void OnDropdownValueChanged(int index)
     {
         currentAnchorName = dropdown.options[index].text;
-        Debug.Log($"currentAnchor: {currentAnchorName}" );
     }
 
     public void OnConfirmationButtonPressed()
@@ -74,7 +70,6 @@ public class NavMeshUIController : MonoBehaviour
         Panel.SetActive(false);
         // find anchor GO
         currentAnchor = MapManager.Instance.FindAnchorGO(currentAnchorName);
-        Debug.Log($"NavMeshUIConteller gfoudn: {currentAnchor.name}");
         // TODO if not found -> Error Message in text field
 
         // navigate to foudn Acnho
