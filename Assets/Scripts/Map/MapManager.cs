@@ -23,6 +23,8 @@ public class MapManager : MonoBehaviour
     [SerializeField] GameObject mapTilePrefab;
     [SerializeField] GameObject mapTileContainer;
 
+    [SerializeField] public int tilesCount;
+
     [SerializeField] public Dictionary<string, string> tilesDict;
 
     public static Dictionary<string, Mesh> meshDict;
@@ -37,6 +39,8 @@ public class MapManager : MonoBehaviour
 
     public List<GameObject> navigateableAnchors = new List<GameObject>();
 
+    public float groundLevel = 0.0f;
+
 
     void Awake()
     {
@@ -48,13 +52,19 @@ public class MapManager : MonoBehaviour
         {
             Instance = this;
         }
-
+        meshDict = new Dictionary<string, Mesh>();
+        tilesDict = new Dictionary<string, string>();
+        LastTackerPositionOnNavMesh = Vector3.zero;
     }
     void Start()
     {
-        meshDict = new Dictionary<string, Mesh> ();
-        tilesDict = new Dictionary<string, string> ();
-        LastTackerPositionOnNavMesh = Vector3.zero;
+        //meshDict = new Dictionary<string, Mesh> ();
+        //tilesDict = new Dictionary<string, string> ();
+        //LastTackerPositionOnNavMesh = Vector3.zero;
+    }
+    private void Update()
+    {
+        tilesCount = tilesDict.Count;
     }
 
     IEnumerator WaitForMeshingEventInit()
@@ -334,20 +344,25 @@ public class MapManager : MonoBehaviour
             }
     }
 
-    public void TryRenderNewTile(Vector3 position)
+    public bool TryRenderNewTile(Vector3 position)
     {
         if (!tilesDict.ContainsKey(position.ToString()))
         {
             GameObject newTile = Instantiate(mapTilePrefab, position, Quaternion.identity);
-            //GameObject newTile = new ;
-            //MeshFilter mf = newTile.AddComponent<MeshFilter>();
-            //mf.mesh = gameObject.GetComponent<MeshFilter>().mesh;
-            //newTile.transform.position = gameObject.transform.position + direction;
-            //newTile.transform.rotation = gameObject.transform.rotation;
-            //newTile.transform.position = direction;
             newTile.SetActive(false);
             newTile.transform.parent = mapTileContainer.transform;
             newTile.SetActive(true);
+            return true;
+        }
+        return false;
+    }
+
+    public void RegisterValidatedMapTile(string attachedfMapComponentName, Vector3 pos)
+    {
+        string position = pos.ToString();
+        if (!tilesDict.ContainsKey(position.ToString()))
+        {
+            tilesDict.Add(position, attachedfMapComponentName);
         }
     }
 }

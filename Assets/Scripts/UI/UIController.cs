@@ -265,6 +265,6 @@ public class UIController : MonoBehaviour
         _mapScanner.SetActive(false);
         // hide current loaded UI Elements
         _mainDoc.rootVisualElement.style.display = DisplayStyle.None;
-        NavMeshController.Instance.BakeNavMesh();
+        //NavMeshController.Instance.BakeNavMesh();
     }
 }

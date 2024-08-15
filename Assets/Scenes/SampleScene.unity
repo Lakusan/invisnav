@@ -1674,7 +1674,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &390993388
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5818,6 +5818,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1108420026}
+  - component: {fileID: 1108420029}
+  - component: {fileID: 1108420028}
+  - component: {fileID: 1108420027}
   m_Layer: 0
   m_Name: MapTileContainer
   m_TagString: Untagged
@@ -5834,12 +5837,73 @@ Transform:
   m_GameObject: {fileID: 1108420025}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -9.279943, y: -8.744719, z: -13.097748}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1108420027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1108420025}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb14328ec52f77d43b77edc7fe1c85e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowNavMesh: 1
+  _material: {fileID: 0}
+  GeneratedMeshOffset: {x: 0, y: 0.05, z: 9}
+--- !u!114 &1108420028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1108420025}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15f6c638ab136bd44b848e6349f74ecd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  navMeshSurface: {fileID: 1108420029}
+  navMeshControllerScript: {fileID: 0}
+  navMeshVisualizerScript: {fileID: 0}
+--- !u!114 &1108420029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1108420025}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AgentTypeID: 0
+  m_CollectObjects: 2
+  m_Size: {x: 10, y: 10, z: 10}
+  m_Center: {x: 0, y: 2, z: 0}
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 2048
+  m_UseGeometry: 0
+  m_DefaultArea: 0
+  m_GenerateLinks: 0
+  m_IgnoreNavMeshAgent: 1
+  m_IgnoreNavMeshObstacle: 1
+  m_OverrideTileSize: 0
+  m_TileSize: 256
+  m_OverrideVoxelSize: 0
+  m_VoxelSize: 0.16666667
+  m_MinRegionArea: 2
+  m_NavMeshData: {fileID: 0}
+  m_BuildHeightMesh: 0
 --- !u!1 &1108923008
 GameObject:
   m_ObjectHideFlags: 0
@@ -6704,6 +6768,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcbedefa4cb7a5f48afd65075e174ca5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveDistance: 2.5
 --- !u!54 &1266355778
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -7680,12 +7745,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1427632003}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 15f6c638ab136bd44b848e6349f74ecd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   navMeshSurface: {fileID: 1427632006}
+  navMeshControllerScript: {fileID: 0}
+  navMeshVisualizerScript: {fileID: 0}
 --- !u!114 &1427632006
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7693,7 +7760,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1427632003}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
   m_Name: 
@@ -7724,7 +7791,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1427632003}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bb14328ec52f77d43b77edc7fe1c85e3, type: 3}
   m_Name: 
@@ -7787,7 +7854,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &1436812397
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -8621,12 +8688,14 @@ MonoBehaviour:
   anchorNavPrefab: {fileID: 163564044802152267, guid: 4b2c9fa7920c1e9458185094b6c55dc1, type: 3}
   mapTilePrefab: {fileID: 6018308441116491315, guid: 3f1bd78efb9186b4f95084aa66da8392, type: 3}
   mapTileContainer: {fileID: 1108420025}
+  tilesCount: 0
   currentLocation: 
   latitudeOrigin: 0
   longitudeOrigin: 0
   anchorList: []
   LastTackerPositionOnNavMesh: {x: 0, y: 0, z: 0}
   navigateableAnchors: []
+  groundLevel: 0
 --- !u!33 &1605548489
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -8916,7 +8985,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1685717622
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8929,11 +8998,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d203b871d7a3ba4abc5f71615fd15ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mesh1: {fileID: 390993387}
-  mesh2: {fileID: 1436812396}
-  findNeigbor: 0
-  growthRate: 0.1
-  growthDirection: {x: 0, y: 1, z: 0}
 --- !u!4 &1685717623
 Transform:
   m_ObjectHideFlags: 0
@@ -9666,6 +9730,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcbedefa4cb7a5f48afd65075e174ca5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveDistance: 1
 --- !u!65 &1821058184
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -11498,7 +11563,7 @@ GameObject:
   - component: {fileID: 2143649898}
   - component: {fileID: 2143649897}
   m_Layer: 8
-  m_Name: Cube
+  m_Name: TestMap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11519,8 +11584,8 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 1
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
@@ -11604,7 +11669,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2143649892}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
   m_Name: 
@@ -11635,12 +11700,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2143649892}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 15f6c638ab136bd44b848e6349f74ecd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   navMeshSurface: {fileID: 2143649897}
+  navMeshControllerScript: {fileID: 0}
+  navMeshVisualizerScript: {fileID: 0}
 --- !u!1 &2144972067
 GameObject:
   m_ObjectHideFlags: 0

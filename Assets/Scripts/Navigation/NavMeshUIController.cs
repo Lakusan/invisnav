@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -21,6 +22,7 @@ public class NavMeshUIController : MonoBehaviour
         dropdown.onValueChanged.AddListener(OnDropdownValueChanged);
     }
 
+   
     void Update()
     {
         if (populate)
@@ -30,10 +32,6 @@ public class NavMeshUIController : MonoBehaviour
                 populate = false;
             }
         }
-    }
-
-    void Awake()
-    {
     }
 
     private bool PopulateDropDown()

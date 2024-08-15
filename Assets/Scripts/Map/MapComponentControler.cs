@@ -1,5 +1,3 @@
-using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class MapComponentControler : MonoBehaviour
@@ -9,6 +7,8 @@ public class MapComponentControler : MonoBehaviour
     [SerializeField] bool isColliding = false;
     [SerializeField] public GameObject prefab;
     [SerializeField] public GameObject container;
+
+    string attachedMapComponentName = "";
 
     void Start()
     { 
@@ -63,14 +63,11 @@ public class MapComponentControler : MonoBehaviour
     // WIEDER AN MACHEN
     private void OnTriggerExit(Collider other)
     {
-        Debug.Log("TRIGGER_Exit");
-
         if (other.gameObject.layer == 9)
         {
             MapManager.Instance.AddMeshToMap(meshFilter.mesh);
             Destroy(gameObject);
         }
-
     }
     //private void OnTriggerEnter(Collider other)
     //{

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -31,6 +32,8 @@ public class CameraNavMeshTracker : MonoBehaviour
 
     private float groundLevel = 0.0f;
 
+    bool gotGoundLevel = false;
+
     private enum TRACKER_STATE
     {
         idle,
@@ -51,11 +54,6 @@ public class CameraNavMeshTracker : MonoBehaviour
     void Update()
     {
       currentState = this.state.ToString();
-        //if(MapManager.Instance.LastTackerPositionOnNavMesh.y != 0.0f)
-        //{
-        //    groundLevel = Math.Abs(MapManager.Instance.LastTackerPositionOnNavMesh.y) +1;
-        //    distanceThreshold = groundLevel;
-        //} 
        
         if (dropTracker)
         {
@@ -83,8 +81,8 @@ public class CameraNavMeshTracker : MonoBehaviour
                 break;
             case TRACKER_STATE.isOnNavMesh:
                 trackerNavMeshAgent.enabled = true;
-                // if navigating update path
-                NavMeshPathDrawer.Instance.Navigate();
+                // if navigating update path on navigation only
+                //NavMeshPathDrawer.Instance.Navigate();
                 if (IsTrackerOutOfRange())
                 {
                     trackerNavMeshAgent.enabled = false;
@@ -111,7 +109,6 @@ public class CameraNavMeshTracker : MonoBehaviour
             }
             if(distanceThreshold < 100)
             {
-
                 distanceThreshold++;
             } else
             {
@@ -226,5 +223,24 @@ public class CameraNavMeshTracker : MonoBehaviour
     // of path is null -> use last path
     // If tacker is not on navmesh -> no path
     // render path always even if calc not wotrking
-
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.layer == 8)
+        {
+            if (!gotGoundLevel)
+            {
+                Debug.Log($"Found ground at {trackerGO.transform.position} with {collision.gameObject.transform.name}");
+                SetGroundLevelAndCreateFirstMapTile(trackerGO.transform.position);
+            }
+        }
+    }
+    void SetGroundLevelAndCreateFirstMapTile(Vector3 position)
+    {
+        gotGoundLevel = true;
+        groundLevel = position.y;
+        MapManager.Instance.groundLevel = groundLevel;
+        Vector3 newPosition = new Vector3 (position.x, groundLevel, position.z);
+        MapManager.Instance.TryRenderNewTile(newPosition);
+    }
+    
 }
