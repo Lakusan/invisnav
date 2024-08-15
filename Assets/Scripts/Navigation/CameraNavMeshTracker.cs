@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -57,6 +56,8 @@ public class CameraNavMeshTracker : MonoBehaviour
        
         if (dropTracker)
         {
+            dropTracker = true;
+            trackerGO.transform.position = mainCamera.transform.position;
             trackerRigidbody.useGravity = true;
             dropTracker = false;
             this.state = TRACKER_STATE.isFalling;
@@ -198,7 +199,6 @@ public class CameraNavMeshTracker : MonoBehaviour
 
     private void SetLastTrackerPosition(Vector3 position)
     {
-        MapManager.Instance.LastTackerPositionOnNavMesh = position;
     }
 
     private Vector3 RayCastToGround()
@@ -207,11 +207,14 @@ public class CameraNavMeshTracker : MonoBehaviour
         Debug.DrawRay(mainCamera.transform.position, Vector3.down * 100, Color.cyan);
         if (Physics.Raycast(mainCamera.transform.position, Vector3.down * 100,  out hit))
         {
-            if(hit.collider.gameObject.layer == 10)
+            if(hit.collider.gameObject.layer != 10)
             {
                 Debug.DrawRay(mainCamera.transform.position, hit.point, Color.yellow);
 
                 return hit.point;
+            } else
+            {
+                trackerGO.transform.position = hit.point;
             }
         }
         return Vector3.zero;
@@ -238,9 +241,10 @@ public class CameraNavMeshTracker : MonoBehaviour
     {
         gotGoundLevel = true;
         groundLevel = position.y;
-        MapManager.Instance.groundLevel = groundLevel;
         Vector3 newPosition = new Vector3 (position.x, groundLevel, position.z);
         MapManager.Instance.TryRenderNewTile(newPosition);
     }
-    
+
+
+
 }

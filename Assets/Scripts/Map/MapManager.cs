@@ -35,12 +35,12 @@ public class MapManager : MonoBehaviour
 
     public List<Anchor> anchorList = new List<Anchor>();
     [SerializeField]
-    public Vector3 LastTackerPositionOnNavMesh;
+    public Vector3 lastTackerPositionOnNavMesh;
+    public Vector3 originTilePosition;
+    public bool goundLevelIsKnown = false;
+    public bool enableMapMeshRendering = false;
 
     public List<GameObject> navigateableAnchors = new List<GameObject>();
-
-    public float groundLevel = 0.0f;
-
 
     void Awake()
     {
@@ -54,13 +54,10 @@ public class MapManager : MonoBehaviour
         }
         meshDict = new Dictionary<string, Mesh>();
         tilesDict = new Dictionary<string, string>();
-        LastTackerPositionOnNavMesh = Vector3.zero;
+        lastTackerPositionOnNavMesh = Vector3.zero;
     }
     void Start()
     {
-        //meshDict = new Dictionary<string, Mesh> ();
-        //tilesDict = new Dictionary<string, string> ();
-        //LastTackerPositionOnNavMesh = Vector3.zero;
     }
     private void Update()
     {
@@ -86,85 +83,6 @@ public class MapManager : MonoBehaviour
     }
     public void map(ARMeshesChangedEventArgs m)
     {
-        
-        //if (m.added != null && m.added.Count > 0)
-        //{
-        //    foreach (MeshFilter mf in m.added)
-        //    {
-
-        //        // for each meshfilter, check if key with mf name exists in mapDict
-        //        // if not add it
-        //        // if it exists change vals of map dict
-
-        //        if (meshDict.ContainsKey(mf.name))
-        //        {
-        //            meshDict[mf.name] = mf.sharedMesh;
-        //        }
-        //        else
-        //        {
-        //            meshDict.Add(mf.name, mf.sharedMesh);
-        //        }
-        //        Debug.Log($"count: {meshDict.Count}");
-        //    }
-        //}
-        //if (m.added != null && m.added.Count > 0)
-        //{
-        //    foreach( MeshFilter mf in m.added)
-        //    {
-        //        //AddMeshToMap(mf.mesh);
-        //    }
-        //}
-
-        //foreach (KeyValuePair<string, Mesh> entry in meshDict)
-        //{
-        //    Debug.Log($"key: {entry.Key} Name: {entry.Value.name}");
-        //}
-        //if (m.removed != null && m.removed.Count > 0)
-        //{
-        //    foreach (MeshFilter mf in m.removed)
-        //    {
-        //        meshDict.Remove(mf.name);
-        //        if (gameObject.transform.Find(mf.name)?.gameObject != null)
-        //        {
-        //            Destroy(mf);
-        //            MeshFilter update = Instantiate(mf, gameObject.transform);
-        //            update.name = mf.name;
-        //            Debug.Log("MESH -> UPDATED: " + mf.name);
-        //        }
-        //    }
-        //}
-        //if (m.removed != null && m.removed.Count > 0)
-        //{
-        //    foreach (MeshFilter mf in m.removed)
-        //    {
-        //        //AddMeshToMap(mf.mesh);
-        //    }
-        //}
-        //if (m.updated != null && m.updated.Count > 0)
-        //{
-        //    foreach (MeshFilter mf in m.updated)
-        //    {
-        //        meshDict[mf.name] = mf.sharedMesh;
-        //        UpdateMapComponent(mf.mesh);
-        //    }
-        //}
-        //if (m.updated != null && m.updated.Count > 0)
-        //{
-        //    foreach (MeshFilter mf in m.updated)
-        //    {
-        //        if (GameObject.Find(mf.name))
-        //        {
-        //            Debug.Log("MESH -> UPDATE: " + mf.name);
-        //            if (gameObject.transform.Find(mf.name)?.gameObject != null)
-        //            {
-        //                Destroy(mf);
-        //                MeshFilter update = Instantiate(mf, gameObject.transform);
-        //                update.name = mf.name;
-        //                Debug.Log("MESH -> UPDATED: " + mf.name);
-        //            }
-        //        }
-        //    }
-        //}
     }
 
     public void toggleMeshing()
@@ -208,12 +126,15 @@ public class MapManager : MonoBehaviour
         //gO.transform.position = new Vector3(gO.transform.position.x, gO.transform.position.y + 1.1176f, gO.transform.position.z);
         gO.name = name;
         gO.AddComponent<MeshFilter>();
-        MeshRenderer mr = gO.AddComponent<MeshRenderer>();
-        mr.enabled = true;
+        if (enableMapMeshRendering)
+        {
+            MeshRenderer mr = gO.AddComponent<MeshRenderer>();
+            mr.enabled = true;
+            mr.material = MapMaterial;
+        }
         MeshCollider meshCollider = gO.AddComponent<MeshCollider>();
         MeshFilter mf = gO.GetComponent<MeshFilter>();
         mf.mesh = mesh;
-        mr.material = MapMaterial;
         meshCollider.sharedMesh = mesh;
         gO.layer = 8;
         gO.SetActive(true);
@@ -280,8 +201,11 @@ public class MapManager : MonoBehaviour
        Transform go = mapContainer.gameObject.transform.Find(meshname);
        go.gameObject.SetActive(false);
        MeshFilter filter = go.GetComponent<MeshFilter>();
-       MeshRenderer mr = go.GetComponent<MeshRenderer>();
-        mr.material.color = Color.cyan;
+        if (enableMapMeshRendering)
+        {
+           MeshRenderer mr = go.GetComponent<MeshRenderer>();
+           mr.material.color = Color.cyan;
+        }
        filter.mesh = mesh;
        go.gameObject.SetActive(true);
     }
@@ -292,11 +216,6 @@ public class MapManager : MonoBehaviour
         {
             meshDict.Remove(name);
         }
-    }
-
-    public Vector3 GetLastTrackerPosition()
-    {
-        return LastTackerPositionOnNavMesh;
     }
 
     public void AddAnchor(Anchor anchor)

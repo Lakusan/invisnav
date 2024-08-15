@@ -73,13 +73,14 @@ public class AnchorComponentController : MonoBehaviour
                     break;
                 case ANCHOR_STATE.isReachable:
                     // add anchor to anchorlist
-                    //if (this.anchorDescription != null && this.anchorName != null && this.attachedMapComponentName != null)
+                    //if (this.anchordescription != null && this.anchorname != null && this.attachedmapcomponentname != null)
                     //{
-                    //    Debug.Log($"anchorName: {this.anchorName}");
-                    //    Debug.Log($"anchorDescription: {this.anchorDescription}");
-                    //    Debug.Log($"attachedMapComponent: {this.attachedMapComponentName}");
+                    //    debug.log($"anchorname: {this.anchorname}");
+                    //    debug.log($"anchordescription: {this.anchordescription}");
+                    //    debug.log($"attachedmapcomponent: {this.attachedmapcomponentname}");
 
-                    //} else { Debug.Log("NULL"); }
+                    //}
+                    //else { debug.log("null"); }
                     this.state = ANCHOR_STATE.validation;
                     break;
                 case ANCHOR_STATE.validation:
@@ -168,7 +169,7 @@ public class AnchorComponentController : MonoBehaviour
     public bool CalculatePath()
     {
         NavMeshPath path = new NavMeshPath();
-        Vector3 origin = MapManager.Instance.LastTackerPositionOnNavMesh;
+        Vector3 origin = MapManager.Instance.lastTackerPositionOnNavMesh;
         NavMesh.CalculatePath(origin, this.gameObject.transform.position, NavMesh.AllAreas, path);
         if (path != null)
         {
@@ -178,7 +179,7 @@ public class AnchorComponentController : MonoBehaviour
             }
             return true;
         }
-         return false;
+        return false;
     }
 
     private void AddAnchorToLocation(Anchor anchor)
