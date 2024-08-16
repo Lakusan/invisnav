@@ -256,15 +256,16 @@ public class UIController : MonoBehaviour
         // get User GPS Cords
         // Align Loaded Map with GPS of start Postion
 #endif
-        // deactivate Modules 
-        // anchormanager off
-        _anchorManager.SetActive(false);
+        // (de)activate Modules 
+        // anchormanager on
+        AnchorManager.Instance.gameObject.SetActive(true);
+        NavMeshUIController.Instance.Panel.SetActive(true);
+        AnchorManager.Instance.createAnchorButton.gameObject.SetActive(false);
         // navigation UI on
         _navManager.SetActive(true);
         // deactivate MapScanner
         _mapScanner.SetActive(false);
         // hide current loaded UI Elements
         _mainDoc.rootVisualElement.style.display = DisplayStyle.None;
-        //NavMeshController.Instance.BakeNavMesh();
     }
 }

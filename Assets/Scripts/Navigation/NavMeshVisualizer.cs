@@ -7,7 +7,8 @@ public class NavMeshVisualizer : MonoBehaviour
     [SerializeField]
     private Material _material;
     [SerializeField]
-    private Vector3 GeneratedMeshOffset = new Vector3(0, 0.05f, 9);
+    //private Vector3 GeneratedMeshOffset = new Vector3(0, 0.05f, 9);
+    private Vector3 GeneratedMeshOffset = new Vector3(0, -1f, 9);
     private GameObject NavMeshVisualizationGo;
 
     private MeshRenderer NavMeshRenderer;

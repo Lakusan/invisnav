@@ -1,5 +1,3 @@
-using System;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -31,7 +29,6 @@ public class NavMeshPathDrawer : MonoBehaviour
     {
         lineRenderer = GetComponent<LineRenderer>();
         lineRenderer.enabled = false;
-        anchorManager.SetActive(false);
     }
     private void Update()
     {

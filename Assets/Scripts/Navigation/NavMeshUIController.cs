@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -7,8 +6,11 @@ public class NavMeshUIController : MonoBehaviour
 {
     [SerializeField] private GameObject DropDown;
     [SerializeField] private GameObject ConfirmationButton;
-    [SerializeField] private GameObject Panel;
+    [SerializeField] public GameObject Panel;
     [SerializeField] private GameObject navManager;
+    [SerializeField] private GameObject anchorSelectionButton;
+    public static NavMeshUIController Instance { get; private set; }
+
 
     private string currentAnchorName = null;
     private GameObject currentAnchor = null;
@@ -16,15 +18,25 @@ public class NavMeshUIController : MonoBehaviour
     private TMP_Dropdown dropdown;
 
     private bool populate = true;
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            Instance = this;
+        }
+    }
     void Start()
     {
         dropdown = DropDown.gameObject.GetComponent<TMP_Dropdown>();
         dropdown.onValueChanged.AddListener(OnDropdownValueChanged);
     }
-
-   
-    void Update()
+     void Update()
     {
+       
         if (populate)
         {
             if (PopulateDropDown())
@@ -53,7 +65,6 @@ public class NavMeshUIController : MonoBehaviour
                 return true;
             }
         }
-
         return false;
     }
 
@@ -64,15 +75,17 @@ public class NavMeshUIController : MonoBehaviour
 
     public void OnConfirmationButtonPressed()
     {
-        // hide ui
         Panel.SetActive(false);
-        // find anchor GO
+        anchorSelectionButton.SetActive(true);
         currentAnchor = MapManager.Instance.FindAnchorGO(currentAnchorName);
-        // TODO if not found -> Error Message in text field
+        TrackerController.Instance.SetTarget(currentAnchor);
 
-        // navigate to foudn Acnho
-        NavMeshPathDrawer.Instance.NavigateToAnchor(currentAnchor);
-        // if treckerisonnavmesh true -> draw path
 
+    }
+
+    public void OnAnchorSelectionButtonPressed()
+    {
+        anchorSelectionButton.SetActive(false);
+        Panel.SetActive(true);
     }
 }

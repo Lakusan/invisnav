@@ -51,6 +51,7 @@ public class AnchorManager : MonoBehaviour
         inputFieldAnchorName = inputFieldAnchorNameGO.GetComponent<TMP_InputField>();
         inputFieldAnchorDescription = inputFieldAnchroDescriptionGO.GetComponent<TMP_InputField>();
     }
+
     public void OnCreateAnchorButtonClicked()
     {
         Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
@@ -58,7 +59,7 @@ public class AnchorManager : MonoBehaviour
         if (Physics.Raycast(ray, out hit))
         {
             if (hit.collider.gameObject.layer == 10)
-            { 
+            {
                 currentAnchor = Instantiate(anchorPrefab, hit.point, hit.transform.rotation);
                 createAnchorButton.gameObject.SetActive(false);
                 panel.SetActive(true);
