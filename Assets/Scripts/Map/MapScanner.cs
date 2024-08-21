@@ -3,7 +3,7 @@ using UnityEngine;
 public class MapScanner : MonoBehaviour
 {
 
-    public float moveDistance = 5f;
+    public float moveDistance;
     private bool movingRight = true;
 
     void Update()
@@ -11,7 +11,7 @@ public class MapScanner : MonoBehaviour
         if (movingRight)
         {
             transform.Translate(Vector3.right * moveDistance * Time.deltaTime, Space.Self);
-            if (transform.position.x >= moveDistance)
+            if (transform.localPosition.x >= moveDistance)
             {
                 movingRight = false;
             }
@@ -19,12 +19,11 @@ public class MapScanner : MonoBehaviour
         else
         {
             transform.Translate(Vector3.left * moveDistance * Time.deltaTime, Space.Self);
-            if (transform.position.x <= -moveDistance)
+            if (transform.localPosition.x <= -moveDistance)
             {
                 movingRight = true;
             }
         }
     }
-
 }
 

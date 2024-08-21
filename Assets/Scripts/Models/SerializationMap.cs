@@ -7,10 +7,9 @@ public class SerializableRoot : MonoBehaviour
 }
 public class SerializableLocation
 {
-#nullable disable
-    public double longitude { get; set; }
-    public double latitude { get; set; }
-#nullable disable
+    public float longitude { get; set; }
+    public float latitude { get; set; }
+    public float trueHeading { get; set;  }
     public List<SerializableMesh> meshes { get; set; }
     public List<string> meshNames { get; set; }
 

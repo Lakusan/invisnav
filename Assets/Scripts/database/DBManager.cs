@@ -41,7 +41,7 @@ public class DBManager : MonoBehaviour
         return registeredLocations;
     }
 
-    public void StoreNewLocation(Dictionary<string, Mesh> meshDict, List<Anchor> anchorlist)
+    public void StoreNewLocation(Dictionary<string, Mesh> meshDict, List<Anchor> anchorlist, float trueHeading, float lat, float lon)
     {
         SerializableMap newMap = new SerializableMap();
 
@@ -53,15 +53,11 @@ public class DBManager : MonoBehaviour
             newMap.root.location.meshNames.Add(entry.Key);
 
         }
-#if UNITY_EDITOR
-        newMap.root.location.longitude = 0.0;
-        newMap.root.location.latitude = 0.0;
-#else
-        newMap.root.location.longitude = MapManager.Instance.longitudeOrigin;
-        newMap.root.location.latitude = MapManager.Instance.latitudeOrigin;
-#endif
+        newMap.root.location.longitude = lon;
+        newMap.root.location.latitude = lat;
+        newMap.root.location.trueHeading = trueHeading;
         // add anchors
-        foreach(Anchor anchor in anchorlist)
+        foreach (Anchor anchor in anchorlist)
         {
             newMap.root.location.anchorList.Add(DBConverter.SerializeAnchor(anchor));
         }
@@ -69,7 +65,6 @@ public class DBManager : MonoBehaviour
         if (mapJson != null)
         {
             var response = RestClient.Put("https://invisnav-default-rtdb.europe-west1.firebasedatabase.app/locations/" + MapManager.Instance.currentLocation + ".json", mapJson);
-            Debug.Log($"RESPONSE: {response.ToString()}");
         }
         // register new location
         SaveRegisteredLocation(MapManager.Instance.currentLocation);
@@ -81,7 +76,6 @@ public class DBManager : MonoBehaviour
         Debug.Log($"COUNT: {registeredLocations.locations.Count}");
         
         string json = JsonConvert.SerializeObject(registeredLocations.locations);
-        Debug.Log($"JSON: {json}");
         RestClient.Put("https://invisnav-default-rtdb.europe-west1.firebasedatabase.app/registeredLocations/locations.json", json);
     }
 
@@ -106,7 +100,7 @@ public class DBManager : MonoBehaviour
                 int indexValue = 0;
                 foreach (var mesh in loadedMap.meshes)
                 {
-                    //MapManager.Instance.AddMeshToLoadedMap(DBConverter.DeserializeMesh(mesh), indexValue.ToString());
+
                     string meshName = loadedMap.meshNames[indexValue];
                     MapManager.Instance.AddMeshToLoadedMap(DBConverter.DeserializeMesh(mesh), meshName);
 

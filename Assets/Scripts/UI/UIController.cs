@@ -25,7 +25,7 @@ public class UIController : MonoBehaviour
     // mapscanner 
     [SerializeField] private GameObject _mapScanner;
     // runtime navbar reference
-    private GameObject _navBar;
+    [SerializeField] private GameObject _navBar;
     // layout elements
     private VisualElement _mainContainer;
     private VisualElement _mainTopContainer;
@@ -60,6 +60,15 @@ public class UIController : MonoBehaviour
     private RegisteredLocations _registeredLocations;
     private string _scanLocationName;
     private string _navigationLocationName;
+    private float initTrueHeading;
+    private float initLat;
+    private float initLon;
+
+    // get initHeading Scan hint elements
+    [SerializeField] public GameObject alignmentManager;
+    [SerializeField] public GameObject panelScan;
+    [SerializeField] public GameObject panelNav;
+
 
     private void Awake()
     {
@@ -96,23 +105,6 @@ public class UIController : MonoBehaviour
         _scanButton.clicked += ScanButtonOnClicked;
         _navigateButton.clicked += NavigateButtonOnClicked;
 
-        // Get Navbar reference
-        try
-        {
-            GameObject myObject = GameObject.Find("NavBar");
-            if (myObject != null)
-            {
-                _navBar = myObject;
-            }
-            else
-            {
-                Debug.LogError("NavBar not found!");
-            }
-        }
-        catch (Exception e)
-        {
-            Debug.LogError($"Error finding object: {e.Message}");
-        }
     }
 
     private void OnDisable()
@@ -199,7 +191,6 @@ public class UIController : MonoBehaviour
     {
         if (_navigationLocationName != null) 
         {
-            Debug.Log($"Start Navigation with {_navigationLocationName}");
             //load Map
             DBManager.Instance.GetLocationByName(_navigationLocationName);
             InitNavigation(); 
@@ -210,20 +201,17 @@ public class UIController : MonoBehaviour
     {
         _registeredLocations = DBManager.Instance.GetRegisteredLocations();
         _locationNameInputField = _scanMiddleContainer.Q<TextField>("LocationInput");
-        Debug.Log($"CREATE LOCATION: {_locationNameInputField.value}");
         // Check if Location exists
         string locationName = _locationNameInputField.value;
         Label textContent = _scanMiddleContainer.Q<Label>("TextContent");
 
         if (_registeredLocations.locations.Contains(locationName))
         {
-            Debug.Log($"Location: {locationName} exists");
             textContent.text = "Location " + locationName + " exists, try another name";
         } else {
             // get created Location
             _scanLocationName = _locationNameInputField.text;
             MapManager.Instance.currentLocation = _scanLocationName;
-            Debug.Log($"CREATED LOCATION: {_scanLocationName}");
             InitScanning();
         }
     }
@@ -232,40 +220,19 @@ public class UIController : MonoBehaviour
     {
         if (this._state == UISTATE.scan)
         {
-            //set gps coords
-            List<float> gpsCoords = LocationManager.Instance.GetGPSCoords();
-#if UNITY_EDITOR
-            MapManager.Instance.latitudeOrigin = 0.0f;
-            MapManager.Instance.longitudeOrigin = 0.0f;
-#else
-            MapManager.Instance.latitudeOrigin = gpsCoords[0];
-            MapManager.Instance.longitudeOrigin = gpsCoords[1];
-#endif
+            alignmentManager.SetActive(true);
             // hide current loaded UI elements
             _mainDoc.rootVisualElement.style.display = DisplayStyle.None; 
         }
-        // enable AR Session
-        MapManager.Instance.toggleMeshing();
     }
 
     private void InitNavigation()
     {
-#if UNITY_EDITOR
-#else
-        // Get Map GPS Cords which were saved with the map
-        // get User GPS Cords
-        // Align Loaded Map with GPS of start Postion
-#endif
-        // (de)activate Modules 
-        // anchormanager on
-        AnchorManager.Instance.gameObject.SetActive(true);
-        NavMeshUIController.Instance.Panel.SetActive(true);
-        AnchorManager.Instance.createAnchorButton.gameObject.SetActive(false);
-        // navigation UI on
-        _navManager.SetActive(true);
         // deactivate MapScanner
         _mapScanner.SetActive(false);
-        // hide current loaded UI Elements
+        // alignment Manager active
+        alignmentManager.SetActive(true);
+
         _mainDoc.rootVisualElement.style.display = DisplayStyle.None;
     }
 }

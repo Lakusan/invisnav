@@ -34,9 +34,9 @@ public class CamTrackerRayCast : MonoBehaviour
             if (IsThereGround())
             {
                 state = TRACKER_STATE.lookingForNavMesh;
+                // get GPS cords + device Rotation
                 yield break;
             }
-            Debug.Log("CamTrackerRayCast -> LookingForGround(): Wait");
             yield return new WaitForSeconds(.1f);
         }
     }

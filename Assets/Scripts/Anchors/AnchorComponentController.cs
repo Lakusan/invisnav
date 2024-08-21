@@ -142,6 +142,7 @@ public class AnchorComponentController : MonoBehaviour
             this.anchorData.attachedMapComponentName = this.attachedMapComponentName;
             MeshRenderer renderer = gameObject.GetComponent<MeshRenderer>();
             renderer.material = validAnchorMaterial;
+            gameObject.transform.parent = GameObject.Find("AnchorContainer").transform;   
             isValidatedAnchor = true;
             this.state = ANCHOR_STATE.isValidated;
         }

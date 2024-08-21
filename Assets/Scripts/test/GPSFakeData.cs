@@ -1,16 +1,16 @@
 using System;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 public class GPSFakeData : MonoBehaviour
 {
     private const float EarthRadius = 6371e3f;
 
-    // Vor Haus 49.22060429674834, 8.655023395707227
+    // SRH 49.413892877933876, 8.651050709960874
     [SerializeField]
-    public float originLatitude = 49.22060429674834f;
-
+    public float originLatitude = 49.413892877933876f;
     [SerializeField]
-    public float originLongitude= 8.655023395707227f;
+    public float originLongitude = 8.651050709960874f;
     [SerializeField]
     Quaternion rotation;
     [SerializeField]
@@ -19,12 +19,15 @@ public class GPSFakeData : MonoBehaviour
     Quaternion rotationToObject;
     double distanceToObject;
 
-    // Mein Parkplatz 49.2209581207065, 8.655041453127165
+    // 49.41302429480974, 8.65435086106081 CUBE
     [SerializeField]
-    public float deviceLatitude = 49.2209581207065f;
+    public float deviceLatitude = 49.41302429480974f;
     [SerializeField]
-    public float deviceLongitude = 8.655041453127165f;
-    Vector3 devicePosition = new Vector3 (5,0,5);
+    public float deviceLongitude = 8.65435086106081f;
+
+    // Distance Luftlinie: 256m
+
+    [SerializeField] GameObject prefab;
 
 
     [SerializeField]
@@ -34,18 +37,19 @@ public class GPSFakeData : MonoBehaviour
 
     Quaternion deviceOrientation;
 
+    double distanceDeviceToMapOrigin = 0f;
+    Quaternion deviceOrientationToMapOrigin = Quaternion.identity;
+    Vector3 distanceVectorDeviceToMapOrigin = new Vector3 (0,0,0);
     void Update()
     {
         //Debug.DrawRay(originGO.transform.position, rotationToObject, Color.red);
-        Vector2 deviceGPSPosition = new Vector2(deviceLatitude, deviceLongitude);
-        Vector2 originGPSPosition = new Vector2(originLatitude, originLongitude);
+        //Vector2 deviceGPSPosition = new Vector2(deviceLatitude, deviceLongitude);
+        //Vector2 originGPSPosition = new Vector2(originLatitude, originLongitude);
         // calculate Distance
-        distanceToObject = CalculateVincentyDistance(originGPSPosition, deviceGPSPosition);
-        rotationToObject = CalculateBearingAnkle(originGPSPosition.x, originGPSPosition.y, deviceGPSPosition.x, deviceGPSPosition.y);
-        Vector3 north = GetNorthVector(originGO.transform);
-
-        DrawBearingAndNorth(originGO.transform.position, rotationToObject, originGO.transform);
-
+        Vector3 originPos = LocationManager.Instance.GetUnityXYZFromGPS((float) deviceLatitude, (float) deviceLongitude, (float)originLatitude, (float)originLongitude);
+        distance = LocationManager.Instance.CalculateVincentyDistance(deviceLatitude, deviceLongitude, originLatitude, originLongitude);
+        rotation = LocationManager.Instance.CalculateBearing(deviceLatitude, deviceLongitude, originLatitude, originLongitude);
+        originGO.transform.position = originPos;
     }
 
     public float CalculateHaversineDistance(Vector2 point1, Vector2 point2)
@@ -69,12 +73,12 @@ public class GPSFakeData : MonoBehaviour
     }
 
     // Calculate distance using Vincenty's formula
-    private double CalculateVincentyDistance(Vector2 p1, Vector2 p2)
+    private double CalculateVincentyDistance(double deviceLat, double deviceLon, double origonLat, double originLon)
     {
-        double lat1 = Mathf.Deg2Rad * p1.x;
-        double lon1 = Mathf.Deg2Rad * p1.y;
-        double lat2 = Mathf.Deg2Rad * p2.x;
-        double lon2 = Mathf.Deg2Rad * p2.y;
+        double lat1 = Mathf.Deg2Rad * deviceLat;
+        double lon1 = Mathf.Deg2Rad * deviceLon;
+        double lat2 = Mathf.Deg2Rad * origonLat;
+        double lon2 = Mathf.Deg2Rad * originLon;
 
         double dLon = lon2 - lon1;
 
@@ -147,7 +151,6 @@ public class GPSFakeData : MonoBehaviour
 
         // Draw bearing as red ray
         Debug.DrawRay(startPosition, bearingDirection * (int)distanceToObject, Color.red);
-        deviceGO.transform.position = bearingDirection * (int)distanceToObject;
         // Draw north as blue ray
         Debug.DrawRay(startPosition, northDirection * 10, Color.blue);
     }

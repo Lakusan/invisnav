@@ -20,7 +20,7 @@ public class NavBarMenuButtonController : MonoBehaviour
     public void OnMenuBtnPressed()
     {
         // Disable Meshing
-        MapManager.Instance.toggleMeshing();
+        MapManager.Instance.DeactivateMeshing();
         // Show last UI state
         _mainDoc.rootVisualElement.style.display = DisplayStyle.Flex;
     }

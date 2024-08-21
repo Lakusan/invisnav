@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using Unity.XR.CoreUtils;
 using UnityEngine;
@@ -9,9 +8,9 @@ using UnityEngine.XR.ARFoundation;
 
 public class MapManager : MonoBehaviour
 {
-
     public static MapManager Instance { get; private set; }
 
+    [SerializeField] GameObject arMeshingGO;
     [SerializeField] ARMeshManager m_arMeshManager;
     [SerializeField] MeshFilter m_meshPrefab;
     [SerializeField] XROrigin m_xrOrigin;
@@ -30,10 +29,11 @@ public class MapManager : MonoBehaviour
     public static Dictionary<string, Mesh> meshDict;
     public string currentLocation = string.Empty;
 
-    public float latitudeOrigin = 0.0f;
-    public float longitudeOrigin = 0.0f;
+    public static float latitudeOrigin;
+    public static float longitudeOrigin;
+    public static float trueHeading;
 
-    public List<Anchor> anchorList = new List<Anchor>();
+    public static List<Anchor> anchorList = new List<Anchor>();
     [SerializeField]
     public Vector3 lastTackerPositionOnNavMesh;
     public Vector3 originTilePosition;
@@ -56,66 +56,46 @@ public class MapManager : MonoBehaviour
         tilesDict = new Dictionary<string, string>();
         lastTackerPositionOnNavMesh = Vector3.zero;
     }
-    void Start()
-    {
-    }
-    private void Update()
+    void Update()
     {
         tilesCount = tilesDict.Count;
     }
 
-    IEnumerator WaitForMeshingEventInit()
+    public void ToggleMeshing()
     {
-        while(m_arMeshManager == null)
-        {
-            yield return null;
-        }
-        m_arMeshManager.meshesChanged += map;
-    }
-
-    private void OnEnable()
-    {
-        StartCoroutine(WaitForMeshingEventInit());
-    }
-    private void OnDisable()
-    {
-        m_arMeshManager.meshesChanged -= map;
-    }
-    public void map(ARMeshesChangedEventArgs m)
-    {
-    }
-
-    public void toggleMeshing()
-    {
+        arMeshingGO = GameObject.Find("AR Meshing");
+        m_arMeshManager = arMeshingGO.GetComponent<ARMeshManager>();
         m_arMeshManager.enabled = !m_arMeshManager.enabled;
-        MyConsole.instance.Log("Meshing state" + m_arMeshManager.enabled);
-        Debug.Log($"meshing {m_arMeshManager.enabled}");
     }
     public void DeactivateMeshing()
     {
-      m_arMeshManager.enabled = false;
-        MyConsole.instance.Log("Meshing state" + m_arMeshManager.enabled);
-        Debug.Log($"meshing {m_arMeshManager.enabled}");
+        arMeshingGO = GameObject.Find("AR Meshing");
+        m_arMeshManager = arMeshingGO.GetComponent<ARMeshManager>();
+        m_arMeshManager.enabled = false;
     }
     public void ActivateMeshing()
     {
+        arMeshingGO = GameObject.Find("AR Meshing");
+        m_arMeshManager = arMeshingGO.GetComponent<ARMeshManager>();
         m_arMeshManager.enabled = true;
-        MyConsole.instance.Log("Meshing state" + m_arMeshManager.enabled);
-        Debug.Log($"meshing {m_arMeshManager.enabled}");
+
     }
 
     public void DBButtonPressed()
     {
         Debug.Log($"try to save meshes");
+    
         StoreMap();
         Debug.Log("Meshes Saved!!");
     }
 
     public void StoreMap()
     {
-        toggleMeshing();
-        DBManager.Instance.StoreNewLocation(meshDict, anchorList);
-        // TODO: redirect to main menu
+        DeactivateMeshing();
+        DBManager.Instance.StoreNewLocation(meshDict, anchorList, trueHeading, latitudeOrigin, longitudeOrigin);
+        Debug.Log($"lon: {longitudeOrigin}");
+        Debug.Log($"lat: {latitudeOrigin}");
+        Debug.Log($"head: {trueHeading}");
     }
 
     private void MapRenderer(string name, Mesh mesh)
@@ -140,14 +120,15 @@ public class MapManager : MonoBehaviour
         gO.SetActive(true);
     }
 
-    public void AddMeshToMap(Mesh mesh) 
+    public void AddMeshToMap(Mesh mesh)
     {
         string newMeshName = mesh.name + "-MAP";
         if (!meshDict.ContainsKey(newMeshName))
         {
             meshDict.Add(newMeshName, mesh);
             MapRenderer(newMeshName, mesh);
-        } else
+        }
+        else
         {
             UpdateMapComponent(mesh);
         }
@@ -159,16 +140,17 @@ public class MapManager : MonoBehaviour
         if (!meshDict.ContainsKey(newMeshName))
         {
             meshDict.Add(newMeshName, mesh);
-            MapRenderer(newMeshName, mesh);
+            //MapRenderer(newMeshName, mesh);
         }
     }
+
 
     public void AddAnchorToLoadedMap(Anchor anchor)
     {
         Debug.Log($"Add Anchor to Loaded Map: {anchor.posX}");
 
         anchorList.Add(anchor);
-        RenderAnchor(anchor);
+        //RenderAnchor(anchor);
     }
     public void RenderAnchor(Anchor anchor)
     {
@@ -197,17 +179,17 @@ public class MapManager : MonoBehaviour
 
     public void UpdateMapComponent(Mesh mesh)
     {
-       string meshname = mesh.name + "-MAP";
-       Transform go = mapContainer.gameObject.transform.Find(meshname);
-       go.gameObject.SetActive(false);
-       MeshFilter filter = go.GetComponent<MeshFilter>();
+        string meshname = mesh.name + "-MAP";
+        Transform go = mapContainer.gameObject.transform.Find(meshname);
+        go.gameObject.SetActive(false);
+        MeshFilter filter = go.GetComponent<MeshFilter>();
         if (enableMapMeshRendering)
         {
-           MeshRenderer mr = go.GetComponent<MeshRenderer>();
-           mr.material.color = Color.cyan;
+            MeshRenderer mr = go.GetComponent<MeshRenderer>();
+            mr.material.color = Color.cyan;
         }
-       filter.mesh = mesh;
-       go.gameObject.SetActive(true);
+        filter.mesh = mesh;
+        go.gameObject.SetActive(true);
     }
 
     public void DeleteMapComponent(string name)
@@ -244,23 +226,23 @@ public class MapManager : MonoBehaviour
         //Vector3 north = GetNorthVector(originGO.transform);
         //DrawBearingAndNorth(originGO.transform.position, rotationToObject, originGO.transform);
 
-        Vector3 mapPos =  LocationManager.Instance.GetUnityXYZFromGPS(latitudeOrigin,longitudeOrigin);
-        mapContainer.transform.position = mapPos;
+        //Vector3 mapPos =  LocationManager.Instance.GetUnityXYZFromGPS(latitudeOrigin,longitudeOrigin);
+        //mapContainer.transform.position = mapPos;
     }
 
     public GameObject FindAnchorGO(string anchorName)
     {
-            GameObject foundObject = anchorContainer.transform.Find(anchorName).gameObject;
+        GameObject foundObject = anchorContainer.transform.Find(anchorName).gameObject;
 
-            if (foundObject != null)
-            {
-                return foundObject;
-            }
-            else
-            {
-                Debug.LogError("GameObject with name '" + name + "' not found!");
-                return null;
-            }
+        if (foundObject != null)
+        {
+            return foundObject;
+        }
+        else
+        {
+            Debug.LogError("GameObject with name '" + name + "' not found!");
+            return null;
+        }
     }
 
     public bool TryRenderNewTile(Vector3 position)

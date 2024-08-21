@@ -50,9 +50,9 @@ public class NavMeshUIController : MonoBehaviour
     {
         dropdown.ClearOptions();
         List<string> data = new List<string>();
-        if (MapManager.Instance.anchorList.Count > 0)
+        if (MapManager.anchorList.Count > 0)
         {
-            foreach (Anchor anchor in MapManager.Instance.anchorList)
+            foreach (Anchor anchor in MapManager.anchorList)
             {
                 Debug.Log($"anchorlist : {anchor}");
                 data.Add(anchor.anchorName);
