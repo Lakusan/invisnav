@@ -24,6 +24,12 @@ public class AlignmentManager : MonoBehaviour
     private TMP_Text scanPanelLatText;
     private TMP_Text scanPanelLonText;
     private TMP_Text scanPanelActualHeadingText;
+    [SerializeField] private MapAligner mapAligner;
+    [SerializeField] private GameObject navigationPanel;
+
+    [SerializeField] private GameObject createAnchorButton;
+    [SerializeField] private GameObject PanelSelectAnchor;
+
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -36,16 +42,15 @@ public class AlignmentManager : MonoBehaviour
         }
     }
 
-    [SerializeField] private GameObject navigationPanelLat;
-    [SerializeField] private GameObject navigationPanelLon;
-    [SerializeField] private GameObject navigationPanelActualHeading;
-    [SerializeField] private GameObject navigationPanelSavedHeading;
-    [SerializeField] private GameObject navigationPanel;
-    [SerializeField] private GameObject Confirm_NAVHeading_Button;
-    private TMP_Text navigationPanelLatText;
-    private TMP_Text navigationPanelLonText;
-    private TMP_Text navigationPanelSavedHeadingText;
-    private TMP_Text navigationPanelActualHeadingText;
+    //[SerializeField] private GameObject navigationPanelLat;
+    //[SerializeField] private GameObject navigationPanelLon;
+    //[SerializeField] private GameObject navigationPanelActualHeading;
+    //[SerializeField] private GameObject navigationPanelSavedHeading;
+    //[SerializeField] private GameObject Confirm_NAVHeading_Button;
+    //private TMP_Text navigationPanelLatText;
+    //private TMP_Text navigationPanelLonText;
+    //private TMP_Text navigationPanelSavedHeadingText;
+    //private TMP_Text navigationPanelActualHeadingText;
 
     private bool done = false;
 
@@ -55,10 +60,10 @@ public class AlignmentManager : MonoBehaviour
         scanPanelLonText = scanPanelLon.GetComponent<TMP_Text>();
         scanPanelActualHeadingText = scanPanelActualHeading.GetComponent<TMP_Text>();
 
-        navigationPanelLatText = navigationPanelLat.GetComponent<TMP_Text>();
-        navigationPanelLonText = navigationPanelLon.GetComponent<TMP_Text>();
-        navigationPanelSavedHeadingText = navigationPanelSavedHeading.GetComponent<TMP_Text>();
-        navigationPanelActualHeadingText = navigationPanelActualHeading.GetComponent<TMP_Text>();
+        //navigationPanelLatText = navigationPanelLat.GetComponent<TMP_Text>();
+        //navigationPanelLonText = navigationPanelLon.GetComponent<TMP_Text>();
+        //navigationPanelSavedHeadingText = navigationPanelSavedHeading.GetComponent<TMP_Text>();
+        //navigationPanelActualHeadingText = navigationPanelActualHeading.GetComponent<TMP_Text>();
     }
 
     void Update()
@@ -83,10 +88,15 @@ public class AlignmentManager : MonoBehaviour
                         if (!navigationPanel.activeSelf && !done)
                         {
                             navigationPanel.SetActive(true);
+                            mapAligner.enabled = true;
                         }
-                        navigationPanelLatText.text = Input.location.lastData.latitude.ToString();
-                        navigationPanelLonText.text = Input.location.lastData.longitude.ToString();
-                        navigationPanelActualHeadingText.text = Input.compass.trueHeading.ToString();
+                        //if (!navigationPanel.activeSelf && !done)
+                        //{
+                        //    navigationPanel.SetActive(true);
+                        //}
+                        //navigationPanelLatText.text = Input.location.lastData.latitude.ToString();
+                        //navigationPanelLonText.text = Input.location.lastData.longitude.ToString();
+                        //navigationPanelActualHeadingText.text = Input.compass.trueHeading.ToString();
                         //navigationPanelSavedHeadingText.text = MapManager.Instance.;
                         break;
                 }
@@ -124,11 +134,23 @@ public class AlignmentManager : MonoBehaviour
     public void OnConfirmNAVHeadingButtonPressed()
     {
         done = true;
-
-        // gyroskopkamera von youtube. 
-        // dann vincenty distanz und azimuth 
-        // wenn user dann am Punkt -> rotation true HEading
-        // dann erst map laden wenn XR Orgigin  + session geladen
-
+        uICamera.SetActive(false);
+        navigationPanel.SetActive(false);
+        PanelSelectAnchor.SetActive(true);
+        // Activate XROrigin
+        xROrigin.SetActive(true);
+        // AR Session
+        aRSession.SetActive(true);
+        // render map 
+        MapManager.Instance.MapRenderer();
+        MapManager.Instance.RenderAllAnchors();
+        // Anchor Manager active
+        anchorManager.SetActive(true);
+        createAnchorButton.SetActive(false);
+        // start navigation stuff
+        // anchor Manager
+        // deactivate Create Anchor Button
+        // activate AnchorManager Plance select
+        // NavMesh ui contoller
     }
 }

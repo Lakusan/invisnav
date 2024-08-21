@@ -17,7 +17,7 @@ public class NavMeshUIController : MonoBehaviour
 
     private TMP_Dropdown dropdown;
 
-    private bool populate = true;
+    [SerializeField] private bool populate = true;
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -65,6 +65,7 @@ public class NavMeshUIController : MonoBehaviour
                 return true;
             }
         }
+        Debug.Log("Dropdown Populate false");
         return false;
     }
 
@@ -79,8 +80,6 @@ public class NavMeshUIController : MonoBehaviour
         anchorSelectionButton.SetActive(true);
         currentAnchor = MapManager.Instance.FindAnchorGO(currentAnchorName);
         TrackerController.Instance.SetTarget(currentAnchor);
-
-
     }
 
     public void OnAnchorSelectionButtonPressed()

@@ -108,7 +108,7 @@ public class DBManager : MonoBehaviour
                 }
                 foreach(SerializableAnchor a in loadedMap.anchorList)
                 {
-                    Debug.Log($"GEtLocationByName serializable anchor posx: {a.posX}");
+                    MyConsole.instance.Log("GEtLocationByName serializable anchor posx: " + a.posX);
 
                     MapManager.Instance.AddAnchorToLoadedMap(DBConverter.DeserializeAnchor(a));
                 }

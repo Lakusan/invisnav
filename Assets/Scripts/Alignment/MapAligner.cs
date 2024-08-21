@@ -1,13 +1,10 @@
 using Newtonsoft.Json;
 using Proyecto26;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Android;
 using UnityEngine.UI;
-using UnityEngine.UIElements;
 
 public class MapAligner : MonoBehaviour
 {
@@ -50,14 +47,14 @@ public class MapAligner : MonoBehaviour
 
     void Start()
     {
-        startLocationServicesCoroutine = StartCoroutine(StartLocationServices());
+        //startLocationServicesCoroutine = StartCoroutine(StartLocationServices());
         dropdown.onValueChanged.AddListener(DropdownValueChanged);
         GetRegisteredLocations();
     } 
 
     void Update()
     {
-        if (isLocationServicesRunning)
+        if (LocationManager.Instance.isLocationServicesRunning)
         {
             //update Device data 
             deviceLat = Input.location.lastData.latitude;
@@ -78,51 +75,45 @@ public class MapAligner : MonoBehaviour
         }
     }
 
-    private IEnumerator StartLocationServices()
-    {
-        if (!Permission.HasUserAuthorizedPermission(Permission.FineLocation))
-        {
-            Permission.RequestUserPermission(Permission.FineLocation);
-            Permission.RequestUserPermission(Permission.CoarseLocation);
-        }
-        if (!Input.location.isEnabledByUser)
-        {
-            yield return new WaitForSeconds(3);
-        }
-        Input.compass.enabled = true;
-        Input.gyro.enabled = true;
+    //private IEnumerator StartLocationServices()
+    //{
+    //    if (!Permission.HasUserAuthorizedPermission(Permission.FineLocation))
+    //    {
+    //        Permission.RequestUserPermission(Permission.FineLocation);
+    //        Permission.RequestUserPermission(Permission.CoarseLocation);
+    //    }
+    //    if (!Input.location.isEnabledByUser)
+    //    {
+    //        yield return new WaitForSeconds(3);
+    //    }
+    //    Input.compass.enabled = true;
+    //    Input.gyro.enabled = true;
 
-        Input.location.Start(1, updateDistanceInMeters: 1);
+    //    Input.location.Start(1, updateDistanceInMeters: 1);
 
-        int maxWait = 20;
-        while (Input.location.status == LocationServiceStatus.Initializing && maxWait > 0)
-        {
-            yield return new WaitForSeconds(1);
-            maxWait--;
-        }
+    //    int maxWait = 20;
+    //    while (Input.location.status == LocationServiceStatus.Initializing && maxWait > 0)
+    //    {
+    //        yield return new WaitForSeconds(1);
+    //        maxWait--;
+    //    }
 
-        if (maxWait < 1)
-        {
-            yield break;
-        }
+    //    if (maxWait < 1)
+    //    {
+    //        yield break;
+    //    }
 
-        if (Input.location.status == LocationServiceStatus.Failed)
-        {
-            Debug.LogError("LocationManager: Unable to determine device location");
-            yield break;
-        }
-        else
-        {
-            isLocationServicesRunning = true;
-            yield break;
-        }
-    }
-
-    void StopLocationServies()
-    {
-        Input.location.Stop();
-    }
-
+    //    if (Input.location.status == LocationServiceStatus.Failed)
+    //    {
+    //        Debug.LogError("LocationManager: Unable to determine device location");
+    //        yield break;
+    //    }
+    //    else
+    //    {
+    //        isLocationServicesRunning = true;
+    //        yield break;
+    //    }
+    //}
     private void PopulateDropdown(List<string> locationsList)
     {
         dropdown.ClearOptions();
@@ -170,7 +161,6 @@ public class MapAligner : MonoBehaviour
 
     public void OnGetDataButtonPressed()
     {
-        Debug.Log("button pressed");
         GetSelectedLocationData(currentSelectedLocation);
     }
 
@@ -192,11 +182,6 @@ public class MapAligner : MonoBehaviour
     {
         (distanceDeviceMapStart, bearingDeviceMapStart) = CalculateDistanceAndBearing(latDevice, lonDevice, latMap, lonMap);
         distanceToMapStart.text = distanceDeviceMapStart.ToString();
-
-        //float distance = CalculateVincentyDistance(latDevice, lonDevice, latMap,lonMap);
-        //distanceToMapStart.text = distance.ToString();
-        //distanceDeviceMapStart = distance;
-        //bearingDeviceMapStart = CalculateBearing(latDevice, lonDevice, latMap, lonMap);
     }
     private Quaternion CalculateBearing(float lat1, float lon1, float lat2, float lon2)
     {
@@ -297,10 +282,3 @@ public class MapAligner : MonoBehaviour
         return ((float)s, bearingDeg);
     }
 }
-
-
-//49.22072573906163, 8.654982851898259
-
-// nach 
-
-// Lidl 49.21512879328867, 8.65144076228273

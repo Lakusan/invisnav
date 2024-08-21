@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using TMPro.EditorUtilities;
+using Unity.VisualScripting;
 using Unity.XR.CoreUtils;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
@@ -98,7 +101,7 @@ public class MapManager : MonoBehaviour
         Debug.Log($"head: {trueHeading}");
     }
 
-    private void MapRenderer(string name, Mesh mesh)
+    private void MapComponentRenderer(string name, Mesh mesh)
     {
         GameObject gO = new GameObject();
         gO.transform.SetParent(mapContainer.transform);
@@ -126,7 +129,7 @@ public class MapManager : MonoBehaviour
         if (!meshDict.ContainsKey(newMeshName))
         {
             meshDict.Add(newMeshName, mesh);
-            MapRenderer(newMeshName, mesh);
+            MapComponentRenderer(newMeshName, mesh);
         }
         else
         {
@@ -144,10 +147,26 @@ public class MapManager : MonoBehaviour
         }
     }
 
+    public void MapRenderer()
+    {
+        foreach (KeyValuePair<string, Mesh> kvp in meshDict)
+        {
+            MapComponentRenderer(kvp.Key,kvp.Value);
+        }
+    }
+
+    public void RenderAllAnchors()
+    {
+        foreach(Anchor anchor in anchorList)
+        {
+            RenderAnchor(anchor);
+        }
+    }
+
 
     public void AddAnchorToLoadedMap(Anchor anchor)
     {
-        Debug.Log($"Add Anchor to Loaded Map: {anchor.posX}");
+        MyConsole.instance.Log("Add Anchor to Loaded Map: " + anchor.posX);
 
         anchorList.Add(anchor);
         //RenderAnchor(anchor);

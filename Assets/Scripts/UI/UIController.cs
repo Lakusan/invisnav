@@ -230,9 +230,7 @@ public class UIController : MonoBehaviour
     {
         // deactivate MapScanner
         _mapScanner.SetActive(false);
-        // alignment Manager active
         alignmentManager.SetActive(true);
-
         _mainDoc.rootVisualElement.style.display = DisplayStyle.None;
     }
 }
