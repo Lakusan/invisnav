@@ -5,7 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   - enabled: 0
@@ -17,7 +17,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/GpsRotatino.unity
     guid: 8fb2165a16187d445baa7a06fa64c90e
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/AlignmentScene.unity
     guid: e7582fa330cfafd4a83264b83a537e7f
   m_configObjects:
