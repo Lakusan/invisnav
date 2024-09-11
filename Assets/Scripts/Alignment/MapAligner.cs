@@ -47,7 +47,6 @@ public class MapAligner : MonoBehaviour
 
     void Start()
     {
-        //startLocationServicesCoroutine = StartCoroutine(StartLocationServices());
         dropdown.onValueChanged.AddListener(DropdownValueChanged);
         GetRegisteredLocations();
     } 
@@ -75,45 +74,6 @@ public class MapAligner : MonoBehaviour
         }
     }
 
-    //private IEnumerator StartLocationServices()
-    //{
-    //    if (!Permission.HasUserAuthorizedPermission(Permission.FineLocation))
-    //    {
-    //        Permission.RequestUserPermission(Permission.FineLocation);
-    //        Permission.RequestUserPermission(Permission.CoarseLocation);
-    //    }
-    //    if (!Input.location.isEnabledByUser)
-    //    {
-    //        yield return new WaitForSeconds(3);
-    //    }
-    //    Input.compass.enabled = true;
-    //    Input.gyro.enabled = true;
-
-    //    Input.location.Start(1, updateDistanceInMeters: 1);
-
-    //    int maxWait = 20;
-    //    while (Input.location.status == LocationServiceStatus.Initializing && maxWait > 0)
-    //    {
-    //        yield return new WaitForSeconds(1);
-    //        maxWait--;
-    //    }
-
-    //    if (maxWait < 1)
-    //    {
-    //        yield break;
-    //    }
-
-    //    if (Input.location.status == LocationServiceStatus.Failed)
-    //    {
-    //        Debug.LogError("LocationManager: Unable to determine device location");
-    //        yield break;
-    //    }
-    //    else
-    //    {
-    //        isLocationServicesRunning = true;
-    //        yield break;
-    //    }
-    //}
     private void PopulateDropdown(List<string> locationsList)
     {
         dropdown.ClearOptions();
@@ -206,22 +166,12 @@ public class MapAligner : MonoBehaviour
         }
         Debug.Log($"bearing: {bearingDeg}");
         // Convert bearing to quaternion
-        //Quaternion rotation = Quaternion.Euler(0, bearingDeg, 0);
         // Convert bearing to quaternion relative to true north
         Quaternion rotation = Quaternion.Euler(0, 0, bearingDeg);
         return rotation;
-        //// Get the device's true heading
-        //float trueHeading = Input.compass.trueHeading;
-
-        //// Calculate the rotation relative to the device's orientation
-        //Quaternion deviceRotation = Quaternion.Euler(0, 0, trueHeading);
-
-        //// Combine the two rotations
-        //Quaternion finalRotation = rotation * deviceRotation;
-
-        //return finalRotation;
     }
-
+    //     Vincenty, T. (1975). Direct solution of geodesics on the ellipsoid.
+    //      Survey Review, 23(176), 87-93.
     private float CalculateVincentyDistance(float lat1, float lon1, float lat2, float lon2)
     {
         lat1 = Mathf.Deg2Rad * lat1;
@@ -243,6 +193,7 @@ public class MapAligner : MonoBehaviour
 
         return distance;
     }
+    // refined with Copilot
 
     public static (float, float) CalculateDistanceAndBearing(float lat1, float lon1, float lat2, float lon2)
     {

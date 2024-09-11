@@ -1,7 +1,6 @@
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEngine.XR.ARFoundation;
 
 public class UIController : MonoBehaviour
 {
@@ -230,6 +229,7 @@ public class UIController : MonoBehaviour
     {
         // deactivate MapScanner
         _mapScanner.SetActive(false);
+        //_arMeshing.GetComponent<ARMeshManager>().enabled = false;
         alignmentManager.SetActive(true);
         _mainDoc.rootVisualElement.style.display = DisplayStyle.None;
     }

@@ -24,12 +24,6 @@ public class MapTileManager : MonoBehaviour
         if (!tiles.ContainsKey(position.ToString()))
         {
             GameObject newTile = Instantiate(prefab, position,Quaternion.identity);
-            //GameObject newTile = new ;
-            //MeshFilter mf = newTile.AddComponent<MeshFilter>();
-            //mf.mesh = gameObject.GetComponent<MeshFilter>().mesh;
-            //newTile.transform.position = gameObject.transform.position + direction;
-            //newTile.transform.rotation = gameObject.transform.rotation;
-            //newTile.transform.position = direction;
             newTile.SetActive(false);
             newTile.transform.parent = mapContainer.transform;
             newTile.SetActive(true);

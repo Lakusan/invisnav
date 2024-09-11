@@ -72,30 +72,26 @@ public class MapManager : MonoBehaviour
         arMeshingGO = GameObject.Find("AR Meshing");
         m_arMeshManager = arMeshingGO.GetComponent<ARMeshManager>();
         m_arMeshManager.enabled = false;
+        MyConsole.instance.Log($"MapManager: Meshing deactivated ");
     }
     public void ActivateMeshing()
     {
         arMeshingGO = GameObject.Find("AR Meshing");
         m_arMeshManager = arMeshingGO.GetComponent<ARMeshManager>();
         m_arMeshManager.enabled = true;
-
+        MyConsole.instance.Log($"MapManager: Meshing activated ");
     }
 
     public void DBButtonPressed()
     {
-        Debug.Log($"try to save meshes");
-    
+        MyConsole.instance.Log($"MapManager: try to save meshes");
         StoreMap();
-        Debug.Log("Meshes Saved!!");
     }
 
     public void StoreMap()
     {
         DeactivateMeshing();
         DBManager.Instance.StoreNewLocation(meshDict, anchorList, trueHeading, latitudeOrigin, longitudeOrigin);
-        Debug.Log($"lon: {longitudeOrigin}");
-        Debug.Log($"lat: {latitudeOrigin}");
-        Debug.Log($"head: {trueHeading}");
     }
 
     private void MapComponentRenderer(string name, Mesh mesh)
@@ -131,6 +127,7 @@ public class MapManager : MonoBehaviour
         else
         {
             UpdateMapComponent(mesh);
+            meshDict[newMeshName] = mesh;
         }
     }
 
@@ -163,19 +160,13 @@ public class MapManager : MonoBehaviour
 
     public void AddAnchorToLoadedMap(Anchor anchor)
     {
-        MyConsole.instance.Log("Add Anchor to Loaded Map: " + anchor.posX);
-
         anchorList.Add(anchor);
         //RenderAnchor(anchor);
     }
     public void RenderAnchor(Anchor anchor)
     {
         // new GO with anchor name
-        Debug.Log($"anchorname : {anchor.anchorName}");
-        Debug.Log($"anchor desc : {anchor.anchorDescription}");
-        Debug.Log($"posX : {anchor.posX}");
-        Debug.Log($"posY : {anchor.posY}");
-        Debug.Log($"posZ : {anchor.posZ}");
+        Debug.Log($"MapManager: {anchor.anchorName} rendered");
 
         GameObject go = Instantiate(anchorNavPrefab);
         go.SetActive(false);
@@ -188,7 +179,6 @@ public class MapManager : MonoBehaviour
         NavAnchorController nac = go.GetComponent<NavAnchorController>();
         nac.SetAnchorNameToTMP(anchor.anchorName);
         nac.SetAnchorDescriptionToTMP(anchor.anchorDescription);
-        Debug.Log($"GO : {go.name}");
         go.SetActive(true);
         navigateableAnchors.Add(go);
     }
@@ -199,12 +189,16 @@ public class MapManager : MonoBehaviour
         Transform go = mapContainer.gameObject.transform.Find(meshname);
         go.gameObject.SetActive(false);
         MeshFilter filter = go.GetComponent<MeshFilter>();
+        filter.mesh.RecalculateBounds();
         if (enableMapMeshRendering)
         {
             MeshRenderer mr = go.GetComponent<MeshRenderer>();
             mr.material.color = Color.cyan;
         }
         filter.mesh = mesh;
+        MeshCollider meshCollider = go.GetComponent<MeshCollider>();
+        meshCollider.sharedMesh = mesh;
+        go.gameObject.layer = 8;
         go.gameObject.SetActive(true);
     }
 
@@ -221,31 +215,6 @@ public class MapManager : MonoBehaviour
         anchorList.Add(anchor);
     }
 
-    public void AlignLoadedMap()
-    {
-        // gps origin
-        // gps device
-
-        // distance + bearing
-        // XYZ unity origin
-
-        // align Map
-        //LocationManager.Instance.GetGPSLocationFromSensors();
-        ////Debug.DrawRay(originGO.transform.position, rotationToObject, Color.red);
-        ////calculate Distance
-        //float distanceToObject = LocationManager.Instance.CalculateVincentyDistance(
-        //    latitudeOrigin, 
-        //    longitudeOrigin,
-        //    LocationManager.Instance.lastGpsCoords[0],
-        //    LocationManager.Instance.lastGpsCoords[0]);
-        //LocationManager.Instance.CalculateBearing();
-        //Vector3 north = GetNorthVector(originGO.transform);
-        //DrawBearingAndNorth(originGO.transform.position, rotationToObject, originGO.transform);
-
-        //Vector3 mapPos =  LocationManager.Instance.GetUnityXYZFromGPS(latitudeOrigin,longitudeOrigin);
-        //mapContainer.transform.position = mapPos;
-    }
-
     public GameObject FindAnchorGO(string anchorName)
     {
         GameObject foundObject = anchorContainer.transform.Find(anchorName).gameObject;
@@ -256,7 +225,7 @@ public class MapManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("GameObject with name '" + name + "' not found!");
+            MyConsole.instance.Log("MapManager: GameObject with name '" + name + "' not found!");
             return null;
         }
     }

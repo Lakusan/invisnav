@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using Proyecto26;
 using Newtonsoft.Json;
+using System.Text;
 
 
 public class DBManager : MonoBehaviour
@@ -44,14 +45,14 @@ public class DBManager : MonoBehaviour
     public void StoreNewLocation(Dictionary<string, Mesh> meshDict, List<Anchor> anchorlist, float trueHeading, float lat, float lon)
     {
         SerializableMap newMap = new SerializableMap();
-
+        MyConsole.instance.Log($"DBManager: StoreNewLocation() => meshDict total count {meshDict.Count}");
+             
         foreach (KeyValuePair<string, Mesh> entry in meshDict)
         {
             Mesh mesh = entry.Value;
             SerializableMesh serializableMesh = DBConverter.SerializeMesh(mesh);
             newMap.root.location.meshes.Add(serializableMesh);
             newMap.root.location.meshNames.Add(entry.Key);
-
         }
         newMap.root.location.longitude = lon;
         newMap.root.location.latitude = lat;
@@ -62,18 +63,49 @@ public class DBManager : MonoBehaviour
             newMap.root.location.anchorList.Add(DBConverter.SerializeAnchor(anchor));
         }
         string mapJson = Newtonsoft.Json.JsonConvert.SerializeObject(newMap.root.location);
+
+
+        byte[] byteArray = Encoding.UTF8.GetBytes(mapJson);
+
+        // Calculate the size in bytes
+        int sizeInBytes = byteArray.Length;
+
+        // Convert the size to megabytes
+        double sizeInMegabytes = sizeInBytes / (1024.0 * 1024.0);
+
+        MyConsole.instance.Log($"DBManager: StoreNewLocation() => Size of the string in megabytes => {sizeInMegabytes} MB");
+
         if (mapJson != null)
         {
-            var response = RestClient.Put("https://invisnav-default-rtdb.europe-west1.firebasedatabase.app/locations/" + MapManager.Instance.currentLocation + ".json", mapJson);
+            MyConsole.instance.Log($"DBManager: StoreNewLocation() => send map to firebase");
+            RestClient.Put(new RequestHelper
+            {
+                Uri = "https://invisnav-default-rtdb.europe-west1.firebasedatabase.app/locations/" + MapManager.Instance.currentLocation + ".json?writeSizeLimit=unlimited",
+                BodyString = mapJson,
+                ProgressCallback = percent => MyConsole.instance.Log($"DBManager: StoreNewLocation() => Upload percent => {(int)(percent*100)} %"),
+            }).Then(response =>
+            {
+                MyConsole.instance.Log($"DBManager: StoreMap() Response => {response.StatusCode.ToString()}");
+                // register new location
+                SaveRegisteredLocation(MapManager.Instance.currentLocation);
+            }).Catch(err => {
+                var error = err as RequestException;
+                MyConsole.instance.Log($"DBManager: ERROR => {error.Response}");
+            });
+            //RestClient.Put("https://invisnav-default-rtdb.europe-west1.firebasedatabase.app/locations/" +MapManager.Instance.currentLocation + ".json", mapJson).Then(response => {
+
+            //    MyConsole.instance.Log($"DBManager: StoreMap() Response => {response.StatusCode.ToString()}");
+            //    });
+        } else
+        {
+            MyConsole.instance.Log("DBManager: Error => Serialization: mapJson is empty");
+            MyConsole.instance.Log("DBManager: Error => Map could not bet saved");
         }
-        // register new location
-        SaveRegisteredLocation(MapManager.Instance.currentLocation);
     }
 
     public void SaveRegisteredLocation( string name)
     {
         registeredLocations.locations.Add(name);
-        Debug.Log($"COUNT: {registeredLocations.locations.Count}");
         
         string json = JsonConvert.SerializeObject(registeredLocations.locations);
         RestClient.Put("https://invisnav-default-rtdb.europe-west1.firebasedatabase.app/registeredLocations/locations.json", json);
@@ -108,14 +140,14 @@ public class DBManager : MonoBehaviour
                 }
                 foreach(SerializableAnchor a in loadedMap.anchorList)
                 {
-                    MyConsole.instance.Log("GEtLocationByName serializable anchor posx: " + a.posX);
+                    MyConsole.instance.Log("DBManager: GetLocationByName serializable anchor posx: " + a.posX);
 
                     MapManager.Instance.AddAnchorToLoadedMap(DBConverter.DeserializeAnchor(a));
                 }
             }
             else
             {
-                Debug.Log("loaded map is null");
+                MyConsole.instance.Log("DBManager: ERROR => loaded map is null");
             }
         });
     }

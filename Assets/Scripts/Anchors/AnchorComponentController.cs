@@ -72,15 +72,7 @@ public class AnchorComponentController : MonoBehaviour
                     IsReachable();
                     break;
                 case ANCHOR_STATE.isReachable:
-                    // add anchor to anchorlist
-                    //if (this.anchordescription != null && this.anchorname != null && this.attachedmapcomponentname != null)
-                    //{
-                    //    debug.log($"anchorname: {this.anchorname}");
-                    //    debug.log($"anchordescription: {this.anchordescription}");
-                    //    debug.log($"attachedmapcomponent: {this.attachedmapcomponentname}");
 
-                    //}
-                    //else { debug.log("null"); }
                     this.state = ANCHOR_STATE.validation;
                     break;
                 case ANCHOR_STATE.validation:

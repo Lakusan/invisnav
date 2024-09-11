@@ -103,28 +103,9 @@ public class LocationManager : MonoBehaviour
         else
         {
             isLocationServicesRunning = true;
-            //// If the connection succeeded, this retrieves the device's current location and displays it in the Console window.
-            //Debug.Log("LocationManager: Location: " + Input.location.lastData.latitude + " " + Input.location.lastData.longitude);
-            //Debug.Log("LocationManager: "+Input.location.lastData.altitude + " " + Input.location.lastData.horizontalAccuracy);
-            //Debug.Log("LocationManager: "+ Input.location.lastData.timestamp);
-            //// get GPS Cords
-            //if (lastGpsCoords.Count < 2) 
-            //{
-            //    lastGpsCoords.Clear();
-            //    Debug.Log("LocationManager: input lat: " + Input.location.lastData.latitude + ", lon " + Input.location.lastData.longitude);
-            //    lastGpsCoords.Add(Input.location.lastData.latitude);
-            //    lastGpsCoords.Add(Input.location.lastData.longitude);
-            //}
-
-            //lastGpsCoords[0] = Input.location.lastData.latitude;
-            //lastGpsCoords[1] = Input.location.lastData.longitude;
-            //deviceRotation = Quaternion.Euler(Input.compass.rawVector.x, Input.compass.rawVector.y, Input.compass.rawVector.z);
-            //Debug.Log($"Device rotation: {deviceRotation}");
             yield break;
         }
         
-        // Stops the location service if there is no need to query location updates continuously.
-        //Input.location.Stop();
     }
 
     // Calculate distance using Vincenty's formula
@@ -199,10 +180,10 @@ public class LocationManager : MonoBehaviour
     {
         GetGPSLocationFromSensors();
         // get distance in meters from origin to object
-        //double distance = CalculateVincentyDistance(lastGpsCoords[0], lastGpsCoords[1], lat, lon);
+
         double distance = CalculateVincentyDistance(lat1, lon1, lat2, lon2);
         // get direction vector from origon to obejct
-        //Quaternion bearing = CalculateBearing(lastGpsCoords[0], lastGpsCoords[1], lat, lon);
+
         Quaternion bearing = CalculateBearing(lat1, lon1, lat2, lon2);
         Vector3 bearingVector = bearing * (Vector3.forward * (int)distance);
         
@@ -217,24 +198,18 @@ public class LocationManager : MonoBehaviour
     private float _filterCoefficient = 0.1f;
     void GetDeviceRotation()
     {
-        // Accelerometer (for initial orientation)
         Vector3 acceleration = Input.acceleration;
         Quaternion accelerationQuaternion = Quaternion.FromToRotation(Vector3.up, -acceleration);
         _accelerationRotation = Quaternion.Slerp(_accelerationRotation, accelerationQuaternion, _filterCoefficient);
 
-        // Gyroscope (for continuous updates)
         _gyroRotation *= Quaternion.Euler(Input.gyro.rotationRate * Time.deltaTime);
 
-        // Magnetometer (for correcting yaw drift)
         Vector3 magneticField = Input.compass.rawVector;
 
-        // Assuming a simple heading calculation (replace with more accurate methods)
         float magneticHeading = Mathf.Atan2(magneticField.x, magneticField.z) * Mathf.Rad2Deg;
 
-        // Create a quaternion representing the magnetic heading
         _magneticRotation = Quaternion.Euler(0, magneticHeading, 0);
 
-        // Combine rotations (implement a suitable fusion algorithm)
         _rotation = Quaternion.Slerp(_rotation, _gyroRotation * _accelerationRotation * _magneticRotation, _filterCoefficient);
 
         deviceRotation = _rotation;

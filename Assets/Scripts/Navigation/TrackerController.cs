@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.UIElements;
 
 [RequireComponent(typeof(LineRenderer))]   
 public class TrackerController : MonoBehaviour

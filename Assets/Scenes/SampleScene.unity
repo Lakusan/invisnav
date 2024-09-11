@@ -5877,7 +5877,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 968053edfd89749c48f4ea5d444abf64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1030320361
+--- !u!114 &1030320364
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -7202,6 +7202,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 786619302}
     - target: {fileID: 2373173230640636865, guid: 665581c303024f14ba4ea6a51532f4e6, type: 3}
+      propertyPath: arMeshingGO
+      value: 
+      objectReference: {fileID: 1030320356}
+    - target: {fileID: 2373173230640636865, guid: 665581c303024f14ba4ea6a51532f4e6, type: 3}
       propertyPath: mapContainer
       value: 
       objectReference: {fileID: 1427632003}
@@ -7217,6 +7221,10 @@ PrefabInstance:
       propertyPath: mapTileContainer
       value: 
       objectReference: {fileID: 1108420025}
+    - target: {fileID: 2373173230640636865, guid: 665581c303024f14ba4ea6a51532f4e6, type: 3}
+      propertyPath: enableMapMeshRendering
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4616483343239301540, guid: 665581c303024f14ba4ea6a51532f4e6, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -12670,6 +12678,10 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1013371890080844073, guid: 8ae5f98b9e2a2cb40bbe1d746b3a81ce, type: 3}
+      propertyPath: m_TextureCoordinates
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1259628708110161814, guid: 8ae5f98b9e2a2cb40bbe1d746b3a81ce, type: 3}
       propertyPath: m_CastShadows
       value: 0
@@ -12787,8 +12799,16 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5728554050489510535, guid: 8ae5f98b9e2a2cb40bbe1d746b3a81ce, type: 3}
+      propertyPath: _targetFrameRate
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 5728554050489510535, guid: 8ae5f98b9e2a2cb40bbe1d746b3a81ce, type: 3}
       propertyPath: _fuseKeyframesOnly
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5728554050489510535, guid: 8ae5f98b9e2a2cb40bbe1d746b3a81ce, type: 3}
+      propertyPath: _meshCullingDistance
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 5728554050489510535, guid: 8ae5f98b9e2a2cb40bbe1d746b3a81ce, type: 3}
       propertyPath: _enableLevelsOfDetail
@@ -12805,6 +12825,10 @@ PrefabInstance:
     - target: {fileID: 5728554050489510535, guid: 8ae5f98b9e2a2cb40bbe1d746b3a81ce, type: 3}
       propertyPath: _maximumIntegrationDistance
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5728554050489510535, guid: 8ae5f98b9e2a2cb40bbe1d746b3a81ce, type: 3}
+      propertyPath: _isFilteringBlockListEnabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5728554050489510535, guid: 8ae5f98b9e2a2cb40bbe1d746b3a81ce, type: 3}
       propertyPath: _enableDistanceBasedVolumetricCleanup
@@ -12836,7 +12860,7 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 1311166101714273992, guid: 8ae5f98b9e2a2cb40bbe1d746b3a81ce, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1030320361}
+      addedObject: {fileID: 1030320364}
   m_SourcePrefab: {fileID: 100100000, guid: 8ae5f98b9e2a2cb40bbe1d746b3a81ce, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
