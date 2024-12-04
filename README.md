@@ -17,10 +17,10 @@
     <span style="color: #8b5cf6;">Navigation</span>
     </br>
     </br>
-    <a href="https://github.com/Lakusan/invisnav"><strong>Read Thesis »</strong></a>
+    <a href="https://github.com/Lakusan/invisnav/blob/develop/MA_Thesis_Andreas_Lakus.pdf"><strong>Read Thesis »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/Lakusan/invisnav"><strong>View Presentaion »</strong></a>
+    <a href="https://github.com/Lakusan/invisnav/blob/main/Kolloquium_Master_Thesis.pdf"><strong>View Presentaion »</strong></a>
 </div>
 
 
@@ -126,8 +126,6 @@
 This Project can be compiled for Android 12. For a different Confiuguration change build settings.
 Otherwise you could stream to Unity Remote via USB.
 </br>
-
-_For more examples, please refer to the [Documentation] in Thesis (https://example.com)_
 
 
 <!-- LICENSE -->
