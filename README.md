@@ -20,7 +20,7 @@
     <a href="https://github.com/Lakusan/invisnav/blob/develop/MA_Thesis_Andreas_Lakus.pdf"><strong>Read Thesis »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/Lakusan/invisnav/blob/main/Kolloquium_Master_Thesis.pdf"><strong>View Presentaion »</strong></a>
+    <a href="https://github.com/Lakusan/invisnav/blob/main/Kolloquium_Master_Thesis.pdf"><strong>View Presentation »</strong></a>
 </div>
 
 
@@ -29,7 +29,7 @@
 <div>
     </br>
     <p>
-   This application was developed as part of my Master's thesis in Applied Computer Science at SRH University Heidelberg, from March to September 2024.
+   This application was developed as part of my Master's Thesis in Applied Computer Science at SRH University Heidelberg (March to September 2024).
     </p>
     <p>
     Abstract:
@@ -57,7 +57,7 @@
     <div style="color: white; padding: 10px; width: 95%; height: 96%; margin: 0;">
         <h3>Scanning</h3>
         <ul>
-            <li style="padding: 5px; margin: 5px;">Real-time generation of Meshes (yellowish)</li>
+            <li style="padding: 5px; margin: 5px;">Real-time generation of Meshes (yellow)</li>
             <li style="padding: 5px; margin: 5px;">Dynamic NavMesh Generation (green)</li>
             <li style="padding: 5px; margin: 5px;">Anchor Placement as Navigation Target (green cube)</li>
         </ul>
@@ -68,9 +68,9 @@
     <div style="color: white; padding: 10px; width: 95%; height: 96%; margin: 0;">
         <h3>Navigation</h3>
         <ul>
-            <li style="padding: 5px; margin: 5px;">Loadable Map as blue Map Segments</li>
+            <li style="padding: 5px; margin: 5px;">Loaded Map as blue Map Segments</li>
             <li style="padding: 5px; margin: 5px;">Green Dummy Anchors get loaded as Navigation Targets</li>
-            <li style="padding: 5px; margin: 5px;">NavMesh gets generated and path can be rentered</li>
+            <li style="padding: 5px; margin: 5px;">NavMesh gets generated and path can be rendered</li>
         </ul>
     </div>
     <div style="color: white; padding: 10px; width: 95%; height: 96%; margin: 0;">
@@ -79,8 +79,8 @@
     <div style="color: white; padding: 10px; width: 95%; height: 96%; margin: 0;">
         <h3>Mapping</h3>
            <ul>
-            <li style="padding: 5px; margin: 5px;">Scan Segments get added to Map, which gehts uploeaded as JSON object</li>
-            <li style="padding: 5px; margin: 5px;">If Map is loaded, NavMesh gets regenerated and servers as foundation of path generation to targets</li>
+            <li style="padding: 5px; margin: 5px;">Scan Segments get added to Map, which gehts uploaded as JSON object</li>
+            <li style="padding: 5px; margin: 5px;">If Map is loaded, NavMesh gets regenerated and serves as foundation for path generation to targets</li>
         </ul>
     </div>
 </section>
@@ -102,14 +102,14 @@
 - [X] Scan Environment
   - [X] Utilization of device IMU for Map Alignment
   - [X] Create digital twin of scanned environment as Unity Mesh
-  - [X] Sematic Segmentation of Scanned Point Cloud Segements to only save floor levels
+  - [X] Sematic Segmentation of scanned Point Cloud Segements reduced to floor level only
   - [X] Place Virtual Anchors as Navigation Targets
   - [X] Upload constructed Map as JSON to Firebase Realtime and publish
 - [X] Navigation
   - [X] Load Map from Firebase Realtime and reconstruct Environment
   - [X] (Re-)Align Map with IMU Data
   - [X] Choose Navigation Target
-  - [X] Folow Path to Target
+  - [X] Follow Path to Target
 
 
 ### Installation
@@ -123,14 +123,13 @@
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-This Project can be compiled for Android 12. For a different Confiuguration change build settings.
-Otherwise you could stream to Unity Remote via USB.
+This Project can be compiled for Android 12. For a different Configuration change build settings.
+Otherwise you could stream to Unity Remote via US connected Device.
 </br>
 
 
 <!-- LICENSE -->
 ## License
-
 Distributed under the MIT License. See `LICENSE.txt` for more information.
 </br>
 
@@ -141,10 +140,5 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 * [![LinkedIn][linkedin-shield]][linkedin-url]
 
 <!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[issues-shield]: https://img.shields.io/github/issues/github_username/repo_name.svg?style=for-the-badge
-[issues-url]: https://github.com/Lakusan/invisnav/issues
-[license-shield]: https://img.shields.io/github/license/github_username/repo_name.svg?style=for-the-badge
-[license-url]: https://github.com/Lakusan/invisnav/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/lakusan
